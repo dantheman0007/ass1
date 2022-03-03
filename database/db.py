@@ -1,3 +1,4 @@
+from re import search
 import sqlalchemy as sq
 import models
 import uuid
@@ -25,7 +26,7 @@ class DB():
                 record = self.session.merge(model(**value))
                 self.session.commit()
                 return record
-                
+
             else:
                 instance = model(**value) 
                 self.session.add(instance)
@@ -50,3 +51,12 @@ class DB():
         messages = self.session.query(models.Message).filter_by(chat_id = chat_id).order_by(models.Message.timestamp)
 
         return messages
+
+    def get_record_from_pk(self, model, pk):
+        return self.session.query(model).get(pk)
+
+    def get_records(self, model, search_fields):
+        return self.session.query(model).filter_by(**search_fields)
+
+    def get_users(self, ids):
+        return self.session.query(models.User).filter(models.User.user_id.in_(ids))

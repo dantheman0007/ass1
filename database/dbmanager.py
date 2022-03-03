@@ -80,6 +80,24 @@ def add_user():
         "last_name": last_name
     }], "user_id"))
 
+def start_chat():
+    users = input("Enter list of users separated by a space: ").split(" ")
+    print(users)
+    
+    d = db.DB()
+
+    new_chat = d.create_or_update(models.Chat, [{"chat_id": str(uuid.uuid4())}], "chat_id")
+    
+    users = d.get_users(users)
+   
+
+    for user in users:
+        new_chat.users.append(user)
+
+    d.session.commit()
+        
+
+    
 
 
 if __name__ == "__main__":
@@ -106,7 +124,9 @@ if __name__ == "__main__":
 
     elif args.command == "add_user":
         add_user()
-            
+    
+    elif args.command == "start_chat":
+        start_chat()
 
             
 
