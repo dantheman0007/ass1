@@ -16,24 +16,21 @@ class DB():
         self.session = Session()
         pass
 
-    
-
-    def add_user(self, values):
-        query = sq.insert(models.User)
-        ResultProxy = self.connection.execute(query, values)
 
     def create_or_update(self, model, values, pk):
         for value in values:
-            print(value)
-            instance = self.session.query(model).get(pk)
+            instance = self.session.query(model).get(value[pk])
+            if instance is not None:
 
-            if instance:
-                #update??
-                pass
+                record = self.session.merge(model(**value))
+                self.session.commit()
+                return record
+                
             else:
                 instance = model(**value) 
                 self.session.add(instance)
                 self.session.commit()
+                return instance
 
 
     def add_message(self, chat_id, content, timestamp, from_id):
