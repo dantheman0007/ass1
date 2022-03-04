@@ -7,10 +7,10 @@ serverPort = 9999
 serverSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # initialising server object
 serverSocket.bind(("",serverPort)) # bind to local host
 
-
-senders= []
-receivers=[]
-addresses= []
+# these will need to be replaced by the database
+senders= [] # e.g [client1, client2]
+receivers=[]    # [client2, client1]        if client1 talking to client 2 and vice versa
+addresses= []   # [add_client1, add_client2]
 INITIAL_CONNECTION="You are connected"
 
 '''
@@ -28,33 +28,40 @@ def handleConnection(client): # not sure what client passing, function: get clie
             # send message to recipientClient (sender left)
             stop = True 
 '''
+
+# takes in the message from sender and sends to receiver
 def sendMessage(message, receiver): # message should already be encoded
     
-    # make loop to go over everyone in list from db
-    if message== INITIAL_CONNECTION:
-        serverSocket.sendto(message.encode('utf-8'),addresses[receivers.index(receiver)]) # send message to clients address?
-
-    elif receiver in senders:
+    # TODO make loop to go over everyone in list from db
+    
+    if message== INITIAL_CONNECTION:    # for the intial connection between two clients, show that connection was successful
+        serverSocket.sendto(message.encode('utf-8'),addresses[receivers.index(receiver)])   # find address at index of receiver (this will change with database)
+        
+    elif receiver in senders:   # check if the receiver of message has logged in
         #send message to recipientClient
         index = senders.index(receiver)
         print(f"receiver {receiver} index: {index}")
-        serverSocket.sendto(message.encode('utf-8'),addresses[index]) # send message to clients address?
+        serverSocket.sendto(message.encode('utf-8'),addresses[index])
 
     else:
         print("receiver not in list")
-        # send message to sendClient that could not find recipientClient
+        serverSocket.sendto("User not in list.".encode('utf-8'),addresses[receivers.index(receiver)])
 
-def decodeHeader(message):
-    msg = message.decode('utf-8')
-    sender= msg[0:9]
-    receiver= msg[9:18]
+        
+# this will be used to decode headers, currently only decodes the sender and receiver
+# TODO implement protocol into here
+def decodeHeader(datagram):
 
-    if len(msg)<=18:
+    dgram= datagram.decode('utf-8')
+    sender= dgram[0:9]
+    receiver= dgram[9:18]
+
+    if len(dgram)<=18: # if the datagram doesnt contain message (only client usernames)
         print(f"initial connection: {sender}")
         return(sender, receiver, "You are connected")
     
-    else: # len(msg)> 18: i.e. the datagram contains a message and isnt just the initial connection
-        senderMessage= msg[18:]
+    else: # len(dgram)> 18: i.e. the datagram contains a message and isnt just the initial connection
+        senderMessage= dgram[18:]
         if senderMessage== "QUIT":
             return(sender, receiver, f"{sender} has disconnected.")
         return(sender, receiver, senderMessage)
@@ -68,7 +75,7 @@ def main():
         
         sender, receiver, msg= decodeHeader(message)
 
-        if msg == INITIAL_CONNECTION:
+        if msg == INITIAL_CONNECTION: # add to the list of user
             senders.append(sender)
             addresses.append(clientAddress)
             receivers.append(receiver)

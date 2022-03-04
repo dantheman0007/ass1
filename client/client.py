@@ -1,5 +1,5 @@
 # CLIENT
-
+# TODO: properly exit program, hash message 
 import socket
 import threading
 import sys
@@ -14,45 +14,51 @@ clientSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 username= input("Username (9 digit student number): \n")
 recipientUser= input(f"Who would you like to talk to? \n{username}> ")
 
+# takes in input message from user
+# should probably be corrected to createDatagram() after correct header implementation
 def createHeader(message):
-    # return "START"+username + recipientUser
+
+    # TODO implement protocol into header
     if not message: # first message to server to see if recipientUser is in database
         return username + recipientUser
     else:
         return username+recipientUser+ message
-        #return username+recipientUser+" START"+ message
+        #return username+recipientUser+ message
 
+# runs in own thread
 def listenForMessage():
    
     while True:
-        print("listening")
         receivedMessage, serverAddress = clientSocket.recvfrom(2048)
         print(f"{recipientUser} > {receivedMessage.decode('utf-8')}")
-
-
-def listenForInput():
+        
+# runs in second thread
+def listenForInput(): # from user keyboard
 
     inChat= True
     
     while inChat:
         usrmessage= input(f"{username} >")
-        if usrmessage == "quit":
+
+        if usrmessage == "quit": # user disconnecting
             clientSocket.sendto(createHeader("QUIT").encode('utf-8'),(serverName,serverPort))
             print("Signing out...")
             inChat=False
             return
+            # TODO properly exit program (can do it when gui done?)
             # try:
             #    os.kill(os.getpid(), signal.SIGINT)
             # except:
                 
 
-        elif usrmessage== "get":
+        elif usrmessage== "get": # not used at the moment, need to wait for how protocol is done
             try:
                 receivedMessage, serverAddress = clientSocket.recvfrom(2048)
                 print(receivedMessage.decode('utf-8'))
             except:
                 print("timed out")
-        else:
+        
+        else: # send message to server
             message = createHeader(usrmessage)
             clientSocket.sendto(message.encode('utf-8'),(serverName,serverPort))
     return
@@ -61,7 +67,7 @@ def listenForInput():
 def main():
 
     initialMessage= createHeader("").encode('utf-8')
-        # get feedback from server if recipient is  valid
+        # TODO get feedback from server if recipient is  valid
 
     clientSocket.sendto(initialMessage, (serverName, serverPort))
 
