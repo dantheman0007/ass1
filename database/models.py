@@ -1,3 +1,4 @@
+from ipaddress import ip_address
 from turtle import back
 from sqlalchemy import Column, Integer, String, ForeignKey, Table, DateTime
 from sqlalchemy.orm import relationship, backref
@@ -21,7 +22,8 @@ class User(Base):
     user_id = Column(String, primary_key=True)
     first_name = Column(String)
     last_name = Column(String)
-
+    ip_address = Column(String)
+    
     chats = relationship("Chat", secondary=user_chat, back_populates="users")
 
 class Message(Base):
