@@ -1,3 +1,7 @@
+"""
+Defines all the data models used in the chat application
+"""
+
 from ipaddress import ip_address
 from turtle import back
 from sqlalchemy import Column, Integer, String, ForeignKey, Table, DateTime
