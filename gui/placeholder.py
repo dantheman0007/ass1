@@ -1,4 +1,4 @@
-
+import json
 
 class Placeholder:
 
@@ -18,3 +18,49 @@ class Placeholder:
                 'chat_id': 'e6070836-3b69-4da1-b6ef-7dfabcda5d14',  
                 'chat_name': None}]
         return chat_dict
+
+    def get_messages(self, chat_id):
+        messages = [
+
+            {
+                "chat_id": "e6070836-3b69-4da1-b6ef-7dfabcda5d14",
+                "chat_participants": [
+                    {
+                        "user_id": "LJNDAN001",
+                        "user_name": "Daniel"
+                    },
+                    {
+                        "user_id": "BHGLKS987",
+                        "user_name": "Bob"
+                    }
+                ],
+
+                "messages":[
+                    {
+                        "message_id": "abc",
+                        "msg_content": "Hello",
+                        "timestamp": "123",
+                        "from_id": "LJNDAN001"
+                    },
+                    {
+                        "message_id": "abc",
+                        "msg_content": "Hello",
+                        "timestamp": "123",
+                        "from_id": "LJNDAN001"
+                    },
+                    {
+                        "message_id": "abc",
+                        "msg_content": "Hello",
+                        "timestamp": "123",
+                        "from_id": "LJNDAN001"
+                    }
+                ]
+            }
+
+        ]
+
+        with open("chats/{}.json".format(chat_id), "w") as chat_file:
+            json.dump(messages, chat_file)
+
+        ## When new message arrives from the server, we'll need to have a method that is on the gui side that receives the messages, disaplys it and then writes it to the chat file
+

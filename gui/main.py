@@ -64,6 +64,7 @@ class HomeScreen:
         self.chats = self.ph.ph_get_chats(self.user_id)
 
     def go_to_chat(self, chat_id, btn_press):
+        self.ph.get_messages(chat_id)
         print(chat_id)
 
 
