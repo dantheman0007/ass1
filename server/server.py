@@ -2,6 +2,7 @@
 
 import socket
 import threading
+import models
 
 serverPort = 9999 
 serverSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # initialising server object
