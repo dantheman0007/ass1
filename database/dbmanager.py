@@ -30,6 +30,7 @@ def create_new_db():
 def add_users():
     database = db.DB()
     users = pd.read_excel("data/user_data.xlsx")
+    print(users.to_dict("records"))
     database.create_or_update(models.User, users.to_dict("records"), "user_id")
 
 

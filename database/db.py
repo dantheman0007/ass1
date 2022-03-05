@@ -21,18 +21,25 @@ class DB():
     def create_or_update(self, model, values, pk):
         for value in values:
             instance = self.session.query(model).get(value[pk])
+            
             if instance is not None:
 
-                record = self.session.merge(model(**value))
+                instance = self.session.merge(model(**value))
                 self.session.commit()
-                return record
+                
 
             else:
                 instance = model(**value) 
                 self.session.add(instance)
                 self.session.commit()
-                return instance
 
+        return instance
+
+
+    def set_id(self, user_id, new_ip):
+        user = self.session.query(models.User).get(user_id)
+        user.ip_address = new_ip
+        self.session.commit()
 
     def add_message(self, chat_id, content, timestamp, from_id):
         msg_data =[
@@ -60,3 +67,15 @@ class DB():
 
     def get_users(self, ids):
         return self.session.query(models.User).filter(models.User.user_id.in_(ids))
+
+
+    def get_chat_from_user(self, users):
+
+        chat = self.session.query(models.Chat).filter(users = users)
+
+
+
+    def get_or_create_chat(self, users):
+
+        users = self.get_users(users)
+
