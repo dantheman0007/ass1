@@ -142,17 +142,24 @@ class DB():
         """
         return self.session.query(models.User).filter(models.User.user_id.in_(ids))
 
-
-    def get_chats_from_user(self, users):
+    def get_user_chats(self, user_id):
         """
-        Fetches a chat based on its participantss
+        Fetch the chats that the user specified is part of.
 
         Parameters:
-            users (list): a list of User instances
-        
-        Returns:
-            A list of chat instances
+            user_id: the id of the user who's chat list we want to fetch
         """
 
-        chat = self.session.query(models.Chat).filter(users = users)
+        statement =  sq.select(models.Chat).join(models.Chat.users).filter(models.User.user_id == user_id)
 
+        results = self.session.execute(statement)
+
+        chat_ids = []
+
+        for row in results:
+            chat_ids.append({
+                "chat_id": row.Chat.chat_id,
+                "chat_name": row.Chat.chat_name
+            })
+
+        return chat_ids

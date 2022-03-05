@@ -1,10 +1,11 @@
-from logging import PlaceHolder
+
 from tkinter import *
 from tkinter import ttk
 import configparser
 
-from numpy import place
-from sqlalchemy import column
+from functools import partial
+
+
 import placeholder
 
 
@@ -25,28 +26,30 @@ class HomeScreen:
 
         root.title("Home")
 
-        root.geometry("600x500")
-
-        mainframe = ttk.Frame(root)
+        mainframe = ttk.Frame(root, padding = 10)
         mainframe.grid(column=0, row=0)
+
+
+        chats_frame = ttk.Frame(mainframe, padding = 10)
+        chats_frame.grid(row=1, column=0)
 
         frames = []
 
+        ttk.Label(mainframe, text = "Chats for {}".format(self.user_name)).grid(row=0, column = 0)
+
         for i, chat in enumerate(self.chats):
 
-            f = ttk.Frame(mainframe, relief="solid", borderwidth=5, width=200, height= 100)
-            f.grid(row = i, column =4, columnspan=4)
+            f = ttk.Frame(chats_frame, relief="solid", borderwidth=5, width=200, height= 100, padding=10)
+            f.grid(row = i+1, column =4, columnspan=4, sticky=(E, W) ,pady=5)
             
 
-            ttk.Label(f, text = chat["chat_id"]).grid(row = i, column =0,sticky=W)
+            ttk.Label(f, text = chat["chat_name"]).grid(row = i, column =0,sticky=W)
+
+            f.bind("<Button-1>", partial(self.go_to_chat, chat["chat_id"]))
 
             frames.append(f)
 
             pass
-
-
-        # for child in mainframe.winfo_children(): 
-        #     child.grid_configure(padx=5, pady=5)
 
         pass
 
@@ -55,9 +58,13 @@ class HomeScreen:
         config.read(".config")
 
         self.user_id = config["SESSION_INFO"]["user_id"]
+        self.user_name = config["SESSION_INFO"]["user_name"]
 
     def load_chats(self):
         self.chats = self.ph.ph_get_chats(self.user_id)
+
+    def go_to_chat(self, chat_id, btn_press):
+        print(chat_id)
 
 
 
