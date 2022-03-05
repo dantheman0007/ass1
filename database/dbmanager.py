@@ -1,4 +1,19 @@
+"""
+Helper file for various database tasks, like creating and loading data.
+
+Accepted command-line arguments:
+    create_new_db
+    add_users
+    add_chats
+    add_messages
+    get_messages
+    add_user
+    start_chat
+
+"""
+
 import argparse
+from ipaddress import ip_address
 
 from numpy import record
 import models
@@ -12,6 +27,9 @@ from datetime import datetime
 DATABASE_NAME = "chatdb.sqlite"
 
 def create_new_db():
+    """
+    Deletes and recreates the SQLITE database. Is required when the model structure changes
+    """
     print("Deleting old database file...")
 
     if os.path.exists(DATABASE_NAME):
@@ -28,6 +46,9 @@ def create_new_db():
 
 
 def add_users():
+    """
+    Populates the database with dummy user data from an excel file
+    """
     database = db.DB()
     users = pd.read_excel("data/user_data.xlsx")
     print(users.to_dict("records"))
@@ -35,6 +56,10 @@ def add_users():
 
 
 def add_chats():
+    """
+    Populates the database with dummy chat data from an excel file
+    """
+
     database = db.DB()
     chats = pd.read_excel("data/chat_data.xlsx")
         
@@ -42,6 +67,9 @@ def add_chats():
 
 
 def add_messages():
+    """
+    Allows entering of messages from the command line. Simulates incoming data from the server
+    """
     database = db.DB()
 
     while True:
@@ -59,6 +87,9 @@ def add_messages():
 
 
 def get_messages():
+    """
+    Fetches all messages from the database based on a chat id
+    """
     chat_id = input("Chat id: ")
 
     database = db.DB()
@@ -68,20 +99,30 @@ def get_messages():
     for msg in database.get_chat_messages(chat_id=chat_id):
         print("Message to {} from {} at {}: \n {}".format(msg.chat_id, msg.from_id, msg.timestamp, msg.content))
 
+
 def add_user():
+    """
+    Either inserts or updates a user in the database
+    """
     database = db.DB()
 
     id = input("ID: ")
     first_name = input("Name: ")
     last_name = input("Last Name: ")
+    ip_address = input("IP: ")
 
     print(database.create_or_update(models.User, [{
         "user_id": id,
         "first_name": first_name, 
-        "last_name": last_name
+        "last_name": last_name,
+        "ip_address": ip_address
     }], "user_id"))
 
+
 def start_chat():
+    """
+    Creates a new chat in the database
+    """
     users = input("Enter list of users separated by a space: ").split(" ")
     print(users)
     
@@ -128,6 +169,9 @@ if __name__ == "__main__":
     
     elif args.command == "start_chat":
         start_chat()
+
+    else:
+        print("Unrecognized command")
 
             
 
