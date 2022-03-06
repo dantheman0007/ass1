@@ -2,10 +2,7 @@
 from tkinter import *
 from tkinter import ttk
 import configparser
-
 from functools import partial
-from click import command
-
 from datetime import datetime
 
 import placeholder
@@ -78,12 +75,12 @@ class ChatScreen:
 
     def send_message(self, *args):
         out_dict = {
-            "msg_content": self.new_message.get(),
+            "msg_content": self.message_compose.get(),
             "timestamp": datetime.strftime(datetime.now(), "%d/%m/%Y at %H:%M:%S"),
             "from_id": self.user_id
         }
-
-        self.message_compose.delete(first = 0, last= len(self.new_message.get()))
+        
+        self.message_compose.delete(first = 0, last= len(self.message_compose.get()))
 
         self.write_message(out_dict)
         pass
