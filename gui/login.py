@@ -76,11 +76,7 @@ class LoginScreen:
         return True
 
 
-<<<<<<< HEAD
-root.mainloop()
-=======
 if __name__ == "__main__":
     root = Tk()
     LoginScreen(root)
     root.mainloop()
->>>>>>> master
