@@ -1,12 +1,9 @@
-from email import message
 from tkinter import *
 from tkinter import messagebox
 from tkinter import ttk
 import configparser
-import tkinter
-
-from sqlalchemy import false
 import main as hs
+from os import path
 
 class LoginScreen:
 
@@ -79,6 +76,19 @@ class LoginScreen:
 
 
 if __name__ == "__main__":
+
+    if not path.exists(".config"):
+        config = configparser.ConfigParser()
+
+        config["SESSION_INFO"] = {
+            "user_id": ""
+        }
+
+
+        with open(".config", "w") as configfile:
+            config.write(configfile)
+
+
     root = Tk()
     LoginScreen(root)
     root.mainloop()
