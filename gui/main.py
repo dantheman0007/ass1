@@ -2,19 +2,15 @@
 from tkinter import *
 from tkinter import ttk
 import configparser
-
 from functools import partial
-
-
 import placeholder
-
+import chat
 
 class HomeScreen:
 
     chats = []
 
     user_id = None
-
 
     def __init__(self, root) -> None:
 
@@ -31,11 +27,11 @@ class HomeScreen:
 
 
         chats_frame = ttk.Frame(mainframe, padding = 10)
-        chats_frame.grid(row=1, column=0)
+        chats_frame.grid(row=1, column=0, padx=200)
 
         frames = []
 
-        ttk.Label(mainframe, text = "Chats for {}".format(self.user_name)).grid(row=0, column = 0)
+        ttk.Label(mainframe, text = "Chats for {}".format(self.user_id)).grid(row=0, column = 0)
 
         for i, chat in enumerate(self.chats):
 
@@ -43,9 +39,11 @@ class HomeScreen:
             f.grid(row = i+1, column =4, columnspan=4, sticky=(E, W) ,pady=5)
             
 
-            ttk.Label(f, text = chat["chat_name"]).grid(row = i, column =0,sticky=W)
+            l = ttk.Label(f, text = chat["chat_name"])
+            l.grid(row = i, column =0,sticky=W)
 
-            f.bind("<Button-1>", partial(self.go_to_chat, chat["chat_id"]))
+            f.bind("<Button-1>", partial(self.open_chat, chat["chat_id"]))
+            l.bind("<Button-1>", partial(self.open_chat, chat["chat_id"]))
 
             frames.append(f)
 
@@ -63,13 +61,19 @@ class HomeScreen:
     def load_chats(self):
         self.chats = self.ph.ph_get_chats(self.user_id)
 
-    def go_to_chat(self, chat_id, btn_press):
+    def open_chat(self, chat_id, btn_press):
+        self.ph.get_messages(chat_id)
         print(chat_id)
 
+        chat.new_chat_window(chat_id)
 
 
-root = Tk()
 
-HomeScreen(root)
 
-root.mainloop()
+def open_window():
+
+    root = Tk()
+
+    HomeScreen(root)
+
+    root.mainloop()
