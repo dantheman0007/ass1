@@ -4,6 +4,7 @@ import socket
 import threading
 import models
 import db
+import uuid
 
 serverPort = 9999 
 serverSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # initialising server object
@@ -78,6 +79,9 @@ def decodeHeader(datagram):
         receiver= dgram[9:18]
         senderMessage= dgram[18:]
         return (flag, sender, receiver, senderMessage)
+    elif flag == "CHAT":
+        receiver = dgram[9:] #list of users (can be one) to chat with, separated by spaces
+        return (flag, sender, receiver, "")
     elif flag == "QUIT":
         return(flag, sender, "", "")
         #return(sender, receiver, f"{sender} has disconnected.")
@@ -102,7 +106,16 @@ def main():
             }], "user_id")
             loginConfirm = "Login successful."
             serverSocket.sendto(loginConfirm.encode(), clientAddress)
- 
+
+        elif flag == "CHAT": 
+            receivers = receiver.split(" ") #list of receivers, one for normal chat, multiple for group
+            print(receivers)
+            chatID = str(uuid.uuid4())
+            database.create_or_update(models.Chat,[{
+                "chat_id": chatID,
+                "chat_name": id + " " + receiver
+                }], "chat_id")
+
         elif flag == "SEND":
             print("sending message")
             sendMessage(msg, receiver)

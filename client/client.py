@@ -23,6 +23,11 @@ def createHeader(flag, message, recipientUser):
 
     elif flag == "SEND":
         return flag + "`" + username + recipientUser + message
+        #would probably change recipientUser to the chatID
+
+    elif flag == "CHAT":
+        return flag + "`" + username + recipientUser
+        # recipientUser would be a list of users for a groupchat
 
     elif flag == "QUIT":
         return flag + "`" + username
@@ -72,6 +77,11 @@ def listenForInput(): # from user keyboard
                 print(receivedMessage.decode('utf-8'))
             except:
                 print("timed out")
+        
+        elif usrmessage == "CHAT":
+            users = input("Enter list of users separated by a space: ")
+            message = createHeader("CHAT","", users)
+            clientSocket.sendto(message.encode('utf-8'),(serverName,serverPort))
         
         else: # send message to server
             message = createHeader("SEND",usrmessage, recipientUser)
