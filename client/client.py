@@ -16,8 +16,18 @@ username = input("Username (9 digit student number): \n")
 
 # takes in input message from user
 # should probably be corrected to createDatagram() after correct header implementation
-def createHeader(message, recipientUser):
+def createHeader(flag, message, recipientUser):
 
+    if flag == "LOGIN":
+        return flag + "`" + username
+
+    elif flag == "SEND":
+        return flag + "`" + username + recipientUser + message
+
+    elif flag == "QUIT":
+        return flag + "`" + username
+
+    '''
     # TODO implement protocol into header
     if not message: # first message to server to see if recipientUser is in database
         return username + recipientUser
@@ -25,7 +35,7 @@ def createHeader(message, recipientUser):
         #print("creating header with message")
         #print(message)
         #return username+recipientUser+ message
-        return username+"000000000"+ message
+        return username+"000000000"+ message'''
 
 # runs in own thread
 def listenForMessage():
@@ -33,7 +43,7 @@ def listenForMessage():
     while True:
         receivedMessage, serverAddress = clientSocket.recvfrom(2048)
         #print(f"{recipientUser} > {receivedMessage.decode('utf-8')}")
-        print(receivedMessage)
+        print(receivedMessage.decode())
         
 # runs in second thread
 def listenForInput(): # from user keyboard
@@ -45,7 +55,7 @@ def listenForInput(): # from user keyboard
         usrmessage= input(f"{username} >")
 
         if usrmessage == "quit": # user disconnecting
-            clientSocket.sendto(createHeader("QUIT", recipientUser).encode('utf-8'),(serverName,serverPort))
+            clientSocket.sendto(createHeader("QUIT", "", "").encode('utf-8'),(serverName,serverPort))
             print("Signing out...")
             inChat=False
             return
@@ -64,7 +74,7 @@ def listenForInput(): # from user keyboard
                 print("timed out")
         
         else: # send message to server
-            message = createHeader(usrmessage, recipientUser)
+            message = createHeader("SEND",usrmessage, recipientUser)
             #print(message)
             #print("sending message")
             clientSocket.sendto(message.encode('utf-8'),(serverName,serverPort))
@@ -73,14 +83,16 @@ def listenForInput(): # from user keyboard
 
 def main():
 
-    initialMessage= createHeader("LOGIN", "").encode('utf-8')
+    initialMessage= createHeader("LOGIN", "", "").encode('utf-8') # login in, will add the user to the database if not already in
         # TODO get feedback from server if recipient is  valid
 
     clientSocket.sendto(initialMessage, (serverName, serverPort))
+    receivedMessage, serverAddress = clientSocket.recvfrom(2048)
+    print(receivedMessage.decode())
 
-    recipientUserStatus, serverAddress = clientSocket.recvfrom(2048)
+    #recipientUserStatus, serverAddress = clientSocket.recvfrom(2048)
 
-    print(recipientUserStatus.decode('utf-8'))
+    #print(recipientUserStatus.decode('utf-8'))
 
     
     listenMessage = threading.Thread(target=listenForMessage, )

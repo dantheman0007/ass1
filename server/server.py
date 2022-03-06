@@ -44,7 +44,7 @@ def sendMessage(message, receiver): # message should already be encoded
         print("User does not exist. Message stored in database.")
 
     else:
-        serverSocket.sendto(message.encode(),(rec.ip_address, rec.server_port))
+        serverSocket.sendto(message.encode(),(rec.ip_address, int(rec.server_port)))
     
     '''
     if message== INITIAL_CONNECTION:    # for the intial connection between two clients, show that connection was successful
@@ -66,19 +66,21 @@ def sendMessage(message, receiver): # message should already be encoded
 # TODO implement protocol into here
 def decodeHeader(datagram):
 
-    dgram= datagram.decode('utf-8')
+    datagram = datagram.decode('utf-8')
+    info = datagram.split("`")
+    flag = info[0]
+    dgram = info[1]
     sender= dgram[0:9]
-    receiver= dgram[9:18]
 
-    if len(dgram)<=18: # if the datagram doesnt contain message (only client usernames)
-        #print(f"initial connection: {sender}")
-        return(sender, receiver, "You are connected")
-    
-    else: # len(dgram)> 18: i.e. the datagram contains a message and isnt just the initial connection
+    if flag == "LOGIN":
+        return (flag, sender, "", "") 
+    elif flag == "SEND":
+        receiver= dgram[9:18]
         senderMessage= dgram[18:]
-        if senderMessage== "QUIT":
-            return(sender, receiver, f"{sender} has disconnected.")
-        return(sender, receiver, senderMessage)
+        return (flag, sender, receiver, senderMessage)
+    elif flag == "QUIT":
+        return(flag, sender, "", "")
+        #return(sender, receiver, f"{sender} has disconnected.")
     
 def main():
     
@@ -87,12 +89,12 @@ def main():
 
         message, clientAddress = serverSocket.recvfrom(2048)
         
-        id, receiver, msg= decodeHeader(message)
-        print(msg)
-        print(receiver)
+        flag, id, receiver, msg= decodeHeader(message)
+        print(flag)
+        #print(receiver)
         #print((database.get_record_from_pk(models.User, receiver)).user_id)
 
-        if msg == "LOGIN": # add the user to the database
+        if flag == "LOGIN": # add the user to the database
             database.create_or_update(models.User, [{
                 "user_id": id,
                 "ip_address": clientAddress[0], # if user is already in database, will just update IP address
@@ -101,7 +103,7 @@ def main():
             loginConfirm = "Login successful."
             serverSocket.sendto(loginConfirm.encode(), clientAddress)
  
-        else:
+        elif flag == "SEND":
             print("sending message")
             sendMessage(msg, receiver)
 
