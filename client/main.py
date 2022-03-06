@@ -56,7 +56,6 @@ class HomeScreen:
         config.read(".config")
 
         self.user_id = config["SESSION_INFO"]["user_id"]
-        self.user_name = config["SESSION_INFO"]["user_name"]
 
     def load_chats(self):
         self.chats = self.ph.ph_get_chats(self.user_id)
