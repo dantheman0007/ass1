@@ -27,6 +27,7 @@ class User(Base):
     first_name = Column(String)
     last_name = Column(String)
     ip_address = Column(String)
+    server_port = Column(String)
     
     chats = relationship("Chat", secondary=user_chat, back_populates="users")
 

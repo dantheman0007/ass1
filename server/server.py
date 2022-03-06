@@ -44,8 +44,7 @@ def sendMessage(message, receiver): # message should already be encoded
         print("User does not exist. Message stored in database.")
 
     else:
-        rec_ip = rec.ip_address
-        serverSocket.sendto(message.encode(),(rec_ip, 9999))
+        serverSocket.sendto(message.encode(),(rec.ip_address, rec.server_port))
     
     '''
     if message== INITIAL_CONNECTION:    # for the intial connection between two clients, show that connection was successful
@@ -89,13 +88,15 @@ def main():
         message, clientAddress = serverSocket.recvfrom(2048)
         
         id, receiver, msg= decodeHeader(message)
+        print(msg)
         print(receiver)
         #print((database.get_record_from_pk(models.User, receiver)).user_id)
 
-        if msg == INITIAL_CONNECTION: # add the user to the database
+        if msg == "LOGIN": # add the user to the database
             database.create_or_update(models.User, [{
                 "user_id": id,
-                "ip_address": clientAddress[0] # if user is already in database, will just update IP address
+                "ip_address": clientAddress[0], # if user is already in database, will just update IP address
+                "server_port": clientAddress[1]
             }], "user_id")
             loginConfirm = "Login successful."
             serverSocket.sendto(loginConfirm.encode(), clientAddress)

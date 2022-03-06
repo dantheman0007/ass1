@@ -22,10 +22,10 @@ def createHeader(message, recipientUser):
     if not message: # first message to server to see if recipientUser is in database
         return username + recipientUser
     else:
-        print("creating header with message")
-        print(message)
-        return username+recipientUser+ message
+        #print("creating header with message")
+        #print(message)
         #return username+recipientUser+ message
+        return username+"000000000"+ message
 
 # runs in own thread
 def listenForMessage():
@@ -73,7 +73,7 @@ def listenForInput(): # from user keyboard
 
 def main():
 
-    initialMessage= createHeader("", "").encode('utf-8')
+    initialMessage= createHeader("LOGIN", "").encode('utf-8')
         # TODO get feedback from server if recipient is  valid
 
     clientSocket.sendto(initialMessage, (serverName, serverPort))
