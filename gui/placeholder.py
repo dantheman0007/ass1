@@ -12,17 +12,15 @@ class Placeholder:
     def ph_get_chats(self, user_id):
         chat_dict = [{
             'chat_id': '167831c0-be28-4689-b040-49048118956e',
-            'chat_name': None
+            'chat_name': "DNFHGR123"
              },
              {
                 'chat_id': 'e6070836-3b69-4da1-b6ef-7dfabcda5d14',  
-                'chat_name': None}]
+                'chat_name': "EHRGTY456"}]
         return chat_dict
 
     def get_messages(self, chat_id):
-        messages = [
-
-            {
+        messages = {
                 "chat_id": "e6070836-3b69-4da1-b6ef-7dfabcda5d14",
                 "chat_participants": [
                     {
@@ -43,10 +41,10 @@ class Placeholder:
                         "from_id": "LJNDAN001"
                     },
                     {
-                        "message_id": "abc",
-                        "msg_content": "Hello",
+                        "message_id": "gjmh",
+                        "msg_content": "Goodbye",
                         "timestamp": "123",
-                        "from_id": "LJNDAN001"
+                        "from_id": "MRRJUL007"
                     },
                     {
                         "message_id": "abc",
@@ -57,7 +55,6 @@ class Placeholder:
                 ]
             }
 
-        ]
 
         with open("chats/{}.json".format(chat_id), "w") as chat_file:
             json.dump(messages, chat_file)
