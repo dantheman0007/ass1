@@ -3,6 +3,7 @@
 import socket
 import threading
 import models
+import db
 
 serverPort = 9999 
 serverSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # initialising server object
@@ -13,6 +14,8 @@ senders= [] # e.g [client1, client2]
 receivers=[]    # [client2, client1]        if client1 talking to client 2 and vice versa
 addresses= []   # [add_client1, add_client2]
 INITIAL_CONNECTION="You are connected"
+database = db.DB()
+
 
 '''
 def handleConnection(client): # not sure what client passing, function: get client from accept method and pass to handle connection
@@ -35,8 +38,19 @@ def sendMessage(message, receiver): # message should already be encoded
     
     # TODO make loop to go over everyone in list from db
     
+    rec = database.get_record_from_pk(models.User, receiver)
+
+    if rec == None:
+        print("User does not exist. Message stored in database.")
+
+    else:
+        rec_ip = rec.ip_address
+        serverSocket.sendto(message.encode(),(rec_ip, 9999))
+    
+    '''
     if message== INITIAL_CONNECTION:    # for the intial connection between two clients, show that connection was successful
         serverSocket.sendto(message.encode('utf-8'),addresses[receivers.index(receiver)])   # find address at index of receiver (this will change with database)
+
         
     elif receiver in senders:   # check if the receiver of message has logged in
         #send message to recipientClient
@@ -46,7 +60,7 @@ def sendMessage(message, receiver): # message should already be encoded
 
     else:
         print("receiver not in list")
-        serverSocket.sendto("User not in list.".encode('utf-8'),addresses[receivers.index(receiver)])
+        serverSocket.sendto("User not in list.".encode('utf-8'),addresses[receivers.index(receiver)])'''
 
         
 # this will be used to decode headers, currently only decodes the sender and receiver
@@ -58,7 +72,7 @@ def decodeHeader(datagram):
     receiver= dgram[9:18]
 
     if len(dgram)<=18: # if the datagram doesnt contain message (only client usernames)
-        print(f"initial connection: {sender}")
+        #print(f"initial connection: {sender}")
         return(sender, receiver, "You are connected")
     
     else: # len(dgram)> 18: i.e. the datagram contains a message and isnt just the initial connection
@@ -74,16 +88,21 @@ def main():
 
         message, clientAddress = serverSocket.recvfrom(2048)
         
-        sender, receiver, msg= decodeHeader(message)
+        id, receiver, msg= decodeHeader(message)
+        print(receiver)
+        #print((database.get_record_from_pk(models.User, receiver)).user_id)
 
-        if msg == INITIAL_CONNECTION: # add to the list of user
-            senders.append(sender)
-            addresses.append(clientAddress)
-            receivers.append(receiver)
-            print(f"current list of senders: {senders}") 
-            print(f"current list of receivers: {receivers}") 
-        
-        sendMessage(msg, receiver)
+        if msg == INITIAL_CONNECTION: # add the user to the database
+            database.create_or_update(models.User, [{
+                "user_id": id,
+                "ip_address": clientAddress[0] # if user is already in database, will just update IP address
+            }], "user_id")
+            loginConfirm = "Login successful."
+            serverSocket.sendto(loginConfirm.encode(), clientAddress)
+ 
+        else:
+            print("sending message")
+            sendMessage(msg, receiver)
 
         # modifiedMessage = message.decode('utf-8').upper() # decode from bytes
         # serverSocket.sendto(modifiedMessage.encode('utf-8'),clientAddress)
