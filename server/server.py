@@ -66,6 +66,11 @@ def decodeHeader(datagram):
         if senderMessage== "QUIT":
             return(sender, receiver, f"{sender} has disconnected.")
         return(sender, receiver, senderMessage)
+
+def shutdown_server():
+    print("Server shutting down...")
+    serverSocket.close()
+
     
 def main():
     
