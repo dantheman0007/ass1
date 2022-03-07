@@ -182,7 +182,7 @@ class DB():
         """
 
         new_chat_id = "-".join(sorted(user_ids))
-        print(new_chat_id)
+        #print(new_chat_id)
 
         chat = self.get_record_from_pk(models.Chat, new_chat_id)
 
@@ -190,7 +190,6 @@ class DB():
             print("Chat doesn't exist, creating...")
             chat = models.Chat( chat_id = new_chat_id, chat_name = "") 
             self.session.add(chat)
-            self.session.commit()
 
             print("Adding users...")
             for user in user_ids:
