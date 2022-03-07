@@ -19,23 +19,31 @@ class HomeScreen:
         self.load_config()
         self.load_chats()
 
+        self.root = root
+        self.root.title("Home")
+        self.root.geometry("550x400+300+300")
+        self.mainframe = ttk.Frame(self.root, padding = 10)
+        self.mainframe.grid(column=0, row=0)
 
-        root.title("Home")
-        root.geometry("550x400+300+300")
-        mainframe = ttk.Frame(root, padding = 10)
-        mainframe.grid(column=0, row=0)
+        self.draw_chat_frame()
+        
+        pass
 
-
-        chats_frame = ttk.Frame(mainframe, padding = 10)
-        chats_frame.grid(row=1, column=0, padx=200)
+    def draw_chat_frame(self):
+        self.chats_frame = ttk.Frame(self.mainframe, padding = 10)
+        self.chats_frame.grid(row=2, column=0, padx=200)
 
         frames = []
 
-        ttk.Label(mainframe, text = "Chats for {}".format(self.user_id)).grid(row=0, column = 0)
+        ttk.Label(self.mainframe, text = "Chats for {}".format(self.user_id)).grid(row=1, column = 0)
+
+        btn_new_chat = ttk.Button(self.chats_frame, text = "New Chat", command = self.new_chat_window)
+
+        btn_new_chat.grid(row = 0, column= 4)
 
         for i, chat in enumerate(self.chats):
 
-            f = ttk.Frame(chats_frame, relief="solid", borderwidth=5, width=200, height= 100, padding=10)
+            f = ttk.Frame(self.chats_frame, relief="solid", borderwidth=5, width=200, height= 100, padding=10)
             f.grid(row = i+1, column =4, columnspan=4, sticky=(E, W) ,pady=5)
             
 
@@ -48,8 +56,35 @@ class HomeScreen:
             frames.append(f)
 
             pass
+
+
+    def new_chat_window(self, *args):
+        top= Toplevel(self.root)
+        top.geometry("350x150")
+
+        lbl = ttk.Label(top, text="Enter the list of users you want to talk to, separated by a space:", wraplength=150)
+        lbl.pack(pady=5 )
+        entry= Entry(top, width= 50)
+        entry.pack()
+        entry.bind("<Return>",  lambda x:self.close_win(top, entry))
+        button= Button(top, text="Ok", command=lambda:self.close_win(top, entry))
+        button.pack(pady=5, side= TOP)
+
+        entry.focus()
+
+    def close_win(self, top, entry):
         
-        pass
+        users = entry.get().split()
+        users.append(self.user_id)
+        print(users)
+        top.destroy()
+        self.redraw_chat_frame()
+        
+
+    def redraw_chat_frame(self):
+        self.load_chats()
+        self.chats_frame.grid_forget()
+        self.draw_chat_frame()
 
     def load_config(self):
         config = configparser.ConfigParser()
@@ -68,7 +103,6 @@ class HomeScreen:
 
     # def new_chat(self, recipient):
         
-
 
 def open_window():
 
