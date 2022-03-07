@@ -5,16 +5,20 @@ import configparser
 import main as hs
 from os import path
 
-class LoginScreen:
+class LoginScreen(object):
 
-    def __init__(self, root, mainScreen, chatScreen):
-        self.root = root
+    def __init__(self, parent):
+        self.parent = parent
 
-        self.mainScreen = mainScreen
+        self.root = Toplevel(parent.root)
 
         self.root.title("Login")
         self.root.geometry("550x400+300+300")
 
+        self.create_gui()
+        
+
+    def create_gui(self):
         self.root.grid_rowconfigure(0, weight = 1)
         self.root.grid_columnconfigure(0, weight = 1)
         # win = Tk()
@@ -44,6 +48,7 @@ class LoginScreen:
         id_entry.focus()
         self.root.bind("<Return>", self.login)
 
+
     def login(self, *args):
         uid = self.user_id.get()
 
@@ -51,14 +56,16 @@ class LoginScreen:
             config = configparser.ConfigParser()
             config.read(".config")
 
+            ## TALK TO DB
+
             config["SESSION_INFO"]["user_id"] = uid
 
             with open(".config", "w") as configfile:
                 config.write(configfile)
             
-            self.root.destroy()
 
-            hs.open_window()
+            self.parent.open_home()
+            self.root.destroy()
         else:
             messagebox.showerror(self.root, "Please enter a valid student number")
 
@@ -81,22 +88,3 @@ class LoginScreen:
                 return False
         
         return True
-
-
-if __name__ == "__main__":
-
-    if not path.exists(".config"):
-        config = configparser.ConfigParser()
-
-        config["SESSION_INFO"] = {
-            "user_id": ""
-        }
-
-
-        with open(".config", "w") as configfile:
-            config.write(configfile)
-
-
-    root = Tk()
-    LoginScreen(root)
-    root.mainloop()
