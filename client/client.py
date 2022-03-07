@@ -15,13 +15,17 @@ from tkinter import *
 
 class Client:
 
-    SERVER_NAME = "196.47.216.151"
+
+    SERVER_NAME = "10.0.0.10 "
     SERVER_PORT = 9999
 
     def __init__(self, parent) -> None:
         self.parent = parent
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.client_socket.bind(("192.168.43.13", 2789))
+
+        host_name = socket.gethostname()
+        client_ip = socket.gethostbyname(host_name)
+        self.client_socket.bind((client_ip, 2789))
         
         if not path.exists(".config"):
             config = configparser.ConfigParser()
@@ -103,6 +107,7 @@ clientSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 # #recipientUser= ""
 
+
 # # takes in input message from user
 # # should probably be corrected to createDatagram() after correct header implementation
 # def createHeader(flag, message, recipientUser):
@@ -120,6 +125,7 @@ clientSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 #     elif flag == "QUIT":
 #         return flag + "`" + username
+
 
 #     '''
 #     # TODO implement protocol into header'''
