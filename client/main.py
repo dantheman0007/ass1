@@ -21,7 +21,7 @@ class HomeScreen:
 
 
         root.title("Home")
-
+        root.geometry("550x400+300+300")
         mainframe = ttk.Frame(root, padding = 10)
         mainframe.grid(column=0, row=0)
 
@@ -44,11 +44,11 @@ class HomeScreen:
 
             f.bind("<Button-1>", partial(self.open_chat, chat["chat_id"]))
             l.bind("<Button-1>", partial(self.open_chat, chat["chat_id"]))
-
+ 
             frames.append(f)
 
             pass
-
+        
         pass
 
     def load_config(self):
@@ -67,7 +67,8 @@ class HomeScreen:
 
         chat.new_chat_window(chat_id)
 
-
+    # def new_chat(self, recipient):
+        
 
 
 def open_window():
