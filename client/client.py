@@ -15,13 +15,14 @@ from tkinter import *
 
 class Client:
 
-    SERVER_NAME = "196.47.216.151"
+    SERVER_NAME= "127.0.0.1"
+    #SERVER_NAME = "196.47.216.151"
     SERVER_PORT = 9999
 
     def __init__(self, parent) -> None:
         self.parent = parent
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.client_socket.bind(("196.42.127.35", 2789))
+        self.client_socket.bind(("127.0.0.1", 2789))
         
         if not path.exists(".config"):
             config = configparser.ConfigParser()
