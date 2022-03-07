@@ -15,14 +15,17 @@ from tkinter import *
 
 class Client:
 
-    SERVER_NAME= "127.0.0.1"
-    #SERVER_NAME = "196.47.216.151"
+
+    SERVER_NAME = "10.0.0.10 "
     SERVER_PORT = 9999
 
     def __init__(self, parent) -> None:
         self.parent = parent
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.client_socket.bind(("127.0.0.1", 2789))
+
+        host_name = socket.gethostname()
+        client_ip = socket.gethostbyname(host_name)
+        self.client_socket.bind((client_ip, 2789))
         
         if not path.exists(".config"):
             config = configparser.ConfigParser()
@@ -106,21 +109,21 @@ clientSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 # takes in input message from user
 # should probably be corrected to createDatagram() after correct header implementation
-def createHeader(flag, message, recipientUser):
+def createHeader(self, flag, message, recipientUser):
 
     if flag == "LOGIN":
-        return flag + "`" + username
+        return flag + "`" + self.user_id
 
     elif flag == "SEND":
-        return flag + "`" + username + recipientUser + message
+        return flag + "`" + self.user_id + recipientUser + message
         #would probably change recipientUser to the chatID
 
     elif flag == "CHAT":
-        return flag + "`" + username + recipientUser
+        return flag + "`" + self.user_id + recipientUser
         # recipientUser would be a list of users for a groupchat
 
     elif flag == "QUIT":
-        return flag + "`" + username
+        return flag + "`" + self.user_id
 
     '''
     # TODO implement protocol into header'''
