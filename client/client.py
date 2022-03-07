@@ -7,6 +7,7 @@ import os
 import signal
 import configparser
 
+
 import login
 import main
 from os import path
@@ -122,6 +123,14 @@ def createHeader(flag, message, recipientUser):
 
     '''
     # TODO implement protocol into header'''
+
+def myHash(text:str):
+  hash=0
+  for ch in text:
+    hash = ( hash*281  ^ ord(ch)*997) & 0xFFFFFFFF
+  return hash
+
+
 '''
 # runs in own thread
 def listenForMessage():
@@ -161,6 +170,13 @@ def listenForMessage():
 #             # except:
                 
 
+              
+        #elif usrmessage == "CHAT":
+        #    users = input("Enter list of users separated by a space: ")
+         #   message = createHeader("CHAT","", users)
+          #  clientSocket.sendto(message.encode('utf-8'),(serverName,serverPort))
+          
+          
 #         elif usrmessage== "get": # not used at the moment, need to wait for how protocol is done
 #             try:
 #                 receivedMessage, serverAddress = clientSocket.recvfrom(2048)
@@ -194,8 +210,6 @@ def listenForMessage():
 #     listenMessage = threading.Thread(target=listenForMessage, )
 #     listenMessage.start()
     
-#     listenInput = threading.Thread(target=listenForInput,)
-#     listenInput.start()
 
 
 if __name__ == "__main__":

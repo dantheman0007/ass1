@@ -11,6 +11,13 @@ serverSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # initialising s
 serverSocket.bind(("",serverPort)) # bind to local host
 database = db.DB()
 
+
+def myHash(text:str):
+  hash=0
+  for ch in text:
+    hash = ( hash*281  ^ ord(ch)*997) & 0xFFFFFFFF
+  return hash
+
 # takes in the message from sender and sends to receiver
 def sendMessage(senderID, receiver, message): # message should already be encoded
     
