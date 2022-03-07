@@ -1,24 +1,23 @@
-from email import message
 from tkinter import *
 from tkinter import messagebox
 from tkinter import ttk
 import configparser
-import tkinter
-
-from sqlalchemy import false
 import main as hs
+from os import path
 
 class LoginScreen:
 
     def __init__(self, root):
         self.root = root
         self.root.title("Login")
-
+        self.root.geometry("550x400+300+300")
+        # win = Tk()
+        # win.geometry("500x500")
         mainframe = ttk.Frame(self.root, padding="3 3 12 12")
         mainframe.grid(column=0, row=0, sticky=(N, W, E, S))
         self.root.columnconfigure(0, weight=1)
         self.root.rowconfigure(0, weight=1)
-
+        # mainframe.pack()
         self.user_id = StringVar()
         id_entry = ttk.Entry(mainframe, width= 20, textvariable=self.user_id)
 
@@ -77,6 +76,19 @@ class LoginScreen:
 
 
 if __name__ == "__main__":
+
+    if not path.exists(".config"):
+        config = configparser.ConfigParser()
+
+        config["SESSION_INFO"] = {
+            "user_id": ""
+        }
+
+
+        with open(".config", "w") as configfile:
+            config.write(configfile)
+
+
     root = Tk()
     LoginScreen(root)
     root.mainloop()

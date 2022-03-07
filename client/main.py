@@ -21,7 +21,7 @@ class HomeScreen:
 
 
         root.title("Home")
-
+        root.geometry("550x400+300+300")
         mainframe = ttk.Frame(root, padding = 10)
         mainframe.grid(column=0, row=0)
 
@@ -44,11 +44,11 @@ class HomeScreen:
 
             f.bind("<Button-1>", partial(self.open_chat, chat["chat_id"]))
             l.bind("<Button-1>", partial(self.open_chat, chat["chat_id"]))
-
+ 
             frames.append(f)
 
             pass
-
+        
         pass
 
     def load_config(self):
@@ -56,7 +56,6 @@ class HomeScreen:
         config.read(".config")
 
         self.user_id = config["SESSION_INFO"]["user_id"]
-        self.user_name = config["SESSION_INFO"]["user_name"]
 
     def load_chats(self):
         self.chats = self.ph.ph_get_chats(self.user_id)
@@ -67,7 +66,8 @@ class HomeScreen:
 
         chat.new_chat_window(chat_id)
 
-
+    # def new_chat(self, recipient):
+        
 
 
 def open_window():
