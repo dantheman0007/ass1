@@ -3,16 +3,13 @@
 import socket
 import threading
 import models
+import db
 
 serverPort = 9999 
 serverSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # initialising server object
 serverSocket.bind(("",serverPort)) # bind to local host
+database = db.DB()
 
-# these will need to be replaced by the database
-senders= [] # e.g [client1, client2]
-receivers=[]    # [client2, client1]        if client1 talking to client 2 and vice versa
-addresses= []   # [add_client1, add_client2]
-INITIAL_CONNECTION="You are connected"
 
 '''
 def handleConnection(client): # not sure what client passing, function: get client from accept method and pass to handle connection
@@ -31,41 +28,47 @@ def handleConnection(client): # not sure what client passing, function: get clie
 '''
 
 # takes in the message from sender and sends to receiver
-def sendMessage(message, receiver): # message should already be encoded
+def sendMessage(senderID, receiver, message): # message should already be encoded
     
     # TODO make loop to go over everyone in list from db
     
-    if message== INITIAL_CONNECTION:    # for the intial connection between two clients, show that connection was successful
-        serverSocket.sendto(message.encode('utf-8'),addresses[receivers.index(receiver)])   # find address at index of receiver (this will change with database)
-        
-    elif receiver in senders:   # check if the receiver of message has logged in
-        #send message to recipientClient
-        index = senders.index(receiver)
-        print(f"receiver {receiver} index: {index}")
-        serverSocket.sendto(message.encode('utf-8'),addresses[index])
+    rec = database.get_record_from_pk(models.User, receiver)
 
+    if rec == None:
+        sender = database.get_record_from_pk(models.User, senderID)
+        message = "User " + receiver + " does not exist."
+        serverSocket.sendto(message.encode(),(sender.ip_address, int(sender.server_port)))
+
+    elif rec.online_status == False:
+        sender = database.get_record_from_pk(models.User, senderID)
+        message = "User " + receiver + " is offline. Message has been stored."
+        serverSocket.sendto(message.encode(),(sender.ip_address, int(sender.server_port)))
+    
     else:
-        print("receiver not in list")
-        serverSocket.sendto("User not in list.".encode('utf-8'),addresses[receivers.index(receiver)])
+        serverSocket.sendto(message.encode(),(rec.ip_address, int(rec.server_port)))
 
         
 # this will be used to decode headers, currently only decodes the sender and receiver
 # TODO implement protocol into here
 def decodeHeader(datagram):
 
-    dgram= datagram.decode('utf-8')
+    datagram = datagram.decode('utf-8')
+    info = datagram.split("`")
+    flag = info[0]
+    dgram = info[1]
     sender= dgram[0:9]
-    receiver= dgram[9:18]
 
-    if len(dgram)<=18: # if the datagram doesnt contain message (only client usernames)
-        print(f"initial connection: {sender}")
-        return(sender, receiver, "You are connected")
-    
-    else: # len(dgram)> 18: i.e. the datagram contains a message and isnt just the initial connection
+    if flag == "LOGIN":
+        return (flag, sender, "", "") 
+    elif flag == "SEND":
+        receiver= dgram[9:18]
         senderMessage= dgram[18:]
-        if senderMessage== "QUIT":
-            return(sender, receiver, f"{sender} has disconnected.")
-        return(sender, receiver, senderMessage)
+        return (flag, sender, receiver, senderMessage)
+    elif flag == "CHAT":
+        receiver = dgram[9:] #list of users (can be one) to chat with, separated by spaces
+        return (flag, sender, receiver, "")
+    elif flag == "QUIT":
+        return(flag, sender, "", "")
     
 def main():
     
@@ -74,16 +77,39 @@ def main():
 
         message, clientAddress = serverSocket.recvfrom(2048)
         
-        sender, receiver, msg= decodeHeader(message)
+        flag, id, receiver, msg= decodeHeader(message)
 
-        if msg == INITIAL_CONNECTION: # add to the list of user
-            senders.append(sender)
-            addresses.append(clientAddress)
-            receivers.append(receiver)
-            print(f"current list of senders: {senders}") 
-            print(f"current list of receivers: {receivers}") 
-        
-        sendMessage(msg, receiver)
+        if flag == "LOGIN": # add the user to the database
+            database.create_or_update(models.User, [{
+                "user_id": id,
+                "ip_address": clientAddress[0], # if user is already in database, will just update IP address
+                "server_port": clientAddress[1],
+                "online_status": True
+            }], "user_id")
+            print(id + " has logged in.")
+            loginConfirm = "Login successful."
+            serverSocket.sendto(loginConfirm.encode(), clientAddress)
+
+        elif flag == "CHAT": 
+            receivers = receiver.split(" ") #list of receivers, one for normal chat, multiple for group
+            print(receivers)
+            chatID = ''
+            database.create_or_update(models.Chat,[{
+                "chat_id": chatID,
+                "chat_name": id + " " + receiver
+                }], "chat_id")
+
+        elif flag == "SEND":
+            print("sending message")
+            sendMessage(id, receiver, msg)
+
+        elif flag == "QUIT":
+            database.create_or_update(models.User, [{
+                "user_id": id,
+                "online_status": False
+            }], "user_id")
+            print(id + " has gone offline")
+
 
         # modifiedMessage = message.decode('utf-8').upper() # decode from bytes
         # serverSocket.sendto(modifiedMessage.encode('utf-8'),clientAddress)

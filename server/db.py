@@ -15,7 +15,7 @@ class DB():
 
     def __init__(self):
         """Initiates a connection with the database and starts a session"""
-        self.engine = sq.create_engine("sqlite:///{}".format(self.DATABASE_NAME), echo = True)
+        self.engine = sq.create_engine("sqlite:///{}".format(self.DATABASE_NAME), echo = False)
 
         self.connection = self.engine.connect()
         
