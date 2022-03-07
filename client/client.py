@@ -21,7 +21,7 @@ class Client:
     def __init__(self, parent) -> None:
         self.parent = parent
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.client_socket.bind(("196.42.127.35", 2789))
+        self.client_socket.bind(("192.168.43.13", 2789))
         
         if not path.exists(".config"):
             config = configparser.ConfigParser()
@@ -101,45 +101,45 @@ serverPort = 9999
 clientSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 '''
 
-#recipientUser= ""
+# #recipientUser= ""
 
-# takes in input message from user
-# should probably be corrected to createDatagram() after correct header implementation
-def createHeader(flag, message, recipientUser):
+# # takes in input message from user
+# # should probably be corrected to createDatagram() after correct header implementation
+# def createHeader(flag, message, recipientUser):
 
-    if flag == "LOGIN":
-        return flag + "`" + username
+#     if flag == "LOGIN":
+#         return flag + "`" + username
 
-    elif flag == "SEND":
-        return flag + "`" + username + recipientUser + message
-        #would probably change recipientUser to the chatID
+#     elif flag == "SEND":
+#         return flag + "`" + username + recipientUser + message
+#         #would probably change recipientUser to the chatID
 
-    elif flag == "CHAT":
-        return flag + "`" + username + recipientUser
-        # recipientUser would be a list of users for a groupchat
+#     elif flag == "CHAT":
+#         return flag + "`" + username + recipientUser
+#         # recipientUser would be a list of users for a groupchat
 
-    elif flag == "QUIT":
-        return flag + "`" + username
+#     elif flag == "QUIT":
+#         return flag + "`" + username
 
-    '''
-    # TODO implement protocol into header'''
+#     '''
+#     # TODO implement protocol into header'''
 
-def myHash(text:str):
-  hash=0
-  for ch in text:
-    hash = ( hash*281  ^ ord(ch)*997) & 0xFFFFFFFF
-  return hash
+# def myHash(text:str):
+#   hash=0
+#   for ch in text:
+#     hash = ( hash*281  ^ ord(ch)*997) & 0xFFFFFFFF
+#   return hash
 
 
-'''
-# runs in own thread
-def listenForMessage():
+# '''
+# # runs in own thread
+# def listenForMessage():
    
-    while True:
-        receivedMessage, serverAddress = clientSocket.recvfrom(2048)
-        #print(f"{recipientUser} > {receivedMessage.decode('utf-8')}")
-        print(receivedMessage.decode())
-   '''     
+#     while True:
+#         receivedMessage, serverAddress = clientSocket.recvfrom(2048)
+#         #print(f"{recipientUser} > {receivedMessage.decode('utf-8')}")
+#         print(receivedMessage.decode())
+#    '''     
 # # runs in second thread
 # def listenForInput(): # from user keyboard
 

@@ -1,6 +1,4 @@
 from tkinter import *
-from tkinter import *
-from tkinter import messagebox
 from tkinter import ttk
 import configparser
 import main as hs
@@ -10,6 +8,8 @@ import json
 from functools import partial
 from datetime import datetime
 import client
+import login, home
+
 
 class ChatApp(object):
 
@@ -20,191 +20,25 @@ class ChatApp(object):
         self.client = client.Client(self)
         
         self.root = Tk()
-        self.loginScreen = self.LoginScreen(self)
 
+        self.loginScreen = login.LoginScreen(self)
+
+        self.root.withdraw()
         self.root.mainloop()
-        self.chat_screens = {}
-        self.ChatScreen(self, "e6070836-3b69-4da1-b6ef-7dfabcda5d14")
+        
         
         pass
 
     def open_home(self):
-        self.hs= self.HomeScreen(self)
+        self.hs= home.HomeScreen(self)
 
     def open_chat_screen(self, chat_id):
         self.chat_screens[chat_id] = self.ChatScreen(self, chat_id)
 
 
-    class LoginScreen(object):
-
-        def __init__(self, parent):
-            self.parent = parent
-            self.root = parent.root
-
-
-            self.root.title("Login")
-            self.root.geometry("550x400+300+300")
-
-            self.root.grid_rowconfigure(0, weight = 1)
-            self.root.grid_columnconfigure(0, weight = 1)
-            # win = Tk()
-            # win.geometry("500x500")
-            mainframe = ttk.Frame(self.root, padding="3 3 12 12")
-            mainframe.grid(column=0, row=0, sticky=(N, W, E, S))
-            
-            self.root.columnconfigure(0, weight=1)
-            self.root.rowconfigure(0, weight=1)
-            
-            # mainframe.pack()
-            self.user_id = StringVar()
-            id_entry = ttk.Entry(mainframe, width= 20, textvariable=self.user_id)
-
-            ## Used for testing purposes
-            id_entry.insert(0, "LJNDAN001")
-
-            id_entry.grid(column=2, row= 1, sticky=(W, E))
-
-            ttk.Label(mainframe, text="Student Number:").grid(column=1, row = 1, sticky=W)
-
-            ttk.Button(mainframe, text = "Log in", command=self.login).grid(column= 3, row =1, sticky = W)
-
-            for child in mainframe.winfo_children(): 
-                child.grid_configure(padx=5, pady=5)
-
-            id_entry.focus()
-            self.root.bind("<Return>", self.login)
-
-        def login(self, *args):
-            uid = self.user_id.get()
-
-            if self.validate_uid(uid):
-                config = configparser.ConfigParser()
-                config.read(".config")
-
-                config["SESSION_INFO"]["user_id"] = uid
-
-                with open(".config", "w") as configfile:
-                    config.write(configfile)
-                
-
-                self.parent.open_home()
-            else:
-                messagebox.showerror(self.root, "Please enter a valid student number")
-
-
-        def has_numbers(self, input):
-            return any(char.isdigit() for char in input)
-
-        def has_letters(self, input):
-            return any(c.isalpha() for c in input)
-
-        def validate_uid(self, uid):
-
-            if len(uid) != 9:
-                return False
-            else:
-                str_part = uid[0:6]
-                int_part = uid[6:9]
-
-                if self.has_letters(int_part) or self.has_numbers(str_part):
-                    return False
-            
-            return True
-
-
-    class HomeScreen(object):
-
-        chats = []
-
-        user_id = None
-
-        def __init__(self, parent) -> None:
-
-            self.ph = placeholder.Placeholder()
-
-            self.load_config()
-            self.load_chats()
-            self.parent = parent
-            self.root = Toplevel(parent.root)
-            self.root.title("Home")
-            self.root.geometry("550x400+300+300")
-            self.mainframe = ttk.Frame(self.root, padding = 10)
-            self.mainframe.grid(column=0, row=0)
-
-            self.draw_chat_frame()
-            
-            pass
-
-        def draw_chat_frame(self):
-            self.chats_frame = ttk.Frame(self.mainframe, padding = 10)
-            self.chats_frame.grid(row=2, column=0, padx=200)
-
-            frames = []
-
-            ttk.Label(self.mainframe, text = "Chats for {}".format(self.user_id)).grid(row=1, column = 0)
-
-            btn_new_chat = ttk.Button(self.chats_frame, text = "New Chat", command = self.new_chat_window)
-
-            btn_new_chat.grid(row = 0, column= 4)
-
-            for i, chat in enumerate(self.chats):
-
-                f = ttk.Frame(self.chats_frame, relief="solid", borderwidth=5, width=200, height= 100, padding=10)
-                f.grid(row = i+1, column =4, columnspan=4, sticky=(E, W) ,pady=5)
-                
-
-                l = ttk.Label(f, text = chat["chat_name"])
-                l.grid(row = i, column =0,sticky=W)
-
-                f.bind("<Button-1>", partial(self.open_chat, chat["chat_id"]))
-                l.bind("<Button-1>", partial(self.open_chat, chat["chat_id"]))
     
-                frames.append(f)
 
-                pass
-
-
-        def new_chat_window(self, *args):
-            top= Toplevel(self.root)
-            top.geometry("350x150")
-
-            lbl = ttk.Label(top, text="Enter the list of users you want to talk to, separated by a space:", wraplength=150)
-            lbl.pack(pady=5 )
-            entry= Entry(top, width= 50)
-            entry.pack()
-            entry.bind("<Return>",  lambda x:self.close_win(top, entry))
-            button= Button(top, text="Ok", command=lambda:self.close_win(top, entry))
-            button.pack(pady=5, side= TOP)
-
-            entry.focus()
-
-        def close_win(self, top, entry):
-            
-            users = entry.get().split()
-            users.append(self.user_id)
-            print(users)
-            top.destroy()
-            self.redraw_chat_frame()
-            
-
-        def redraw_chat_frame(self):
-            self.load_chats()
-            self.chats_frame.grid_forget()
-            self.draw_chat_frame()
-
-        def load_config(self):
-            config = configparser.ConfigParser()
-            config.read(".config")
-
-            self.user_id = config["SESSION_INFO"]["user_id"]
-
-        def load_chats(self):
-            self.chats = self.ph.ph_get_chats(self.user_id)
-
-        def open_chat(self, chat_id, btn_press):
-            self.ph.get_messages(chat_id)
-            print(chat_id)
-            self.parent.open_chat_screen(chat_id)
+    
 
     class ChatScreen:
 
