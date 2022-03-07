@@ -5,6 +5,7 @@ import threading
 import models
 import db
 import sqlalchemy
+from datetime import datetime
 
 serverPort = 9999 
 serverSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # initialising server object
@@ -122,6 +123,9 @@ def main():
 
         elif flag == "SEND":
             print("sending message")
+            #add message to the database
+            #database.add_message(chat_id, msg, datetime.now(), id)
+            #need to map the recipients to the chat_id
             sendMessage(id, receiver, msg)
 
         elif flag == "QUIT":
