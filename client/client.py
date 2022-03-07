@@ -6,17 +6,14 @@ import sys
 import os
 import signal
 import configparser
-
-
-import login
-import main
 from os import path
+import json
 from tkinter import *
 
 class Client:
 
 
-    SERVER_NAME = "10.0.0.10 "
+    SERVER_NAME = "127.0.0.1"
     SERVER_PORT = 9999
 
     def __init__(self, parent) -> None:
@@ -25,46 +22,43 @@ class Client:
 
         host_name = socket.gethostname()
         client_ip = socket.gethostbyname(host_name)
-        self.client_socket.bind((client_ip, 2789))
+        print(client_ip)
+        self.client_socket.bind(("192.168.43.13", 2789))
         
-        if not path.exists(".config"):
-            config = configparser.ConfigParser()
-
-            config["SESSION_INFO"] = {
-                "user_id": ""
-            }
-
-
-            with open(".config", "w") as configfile:
-                config.write(configfile)
 
 
         listenMessage = threading.Thread(target=self.listenForMessage, )
         listenMessage.start()
-
         
 
+    def create_request(self, flag, **kwargs):
+        header = "`".join([flag, self.parent.user_id])
         
+        payload = {}
 
-    def read_config(self):
-        config = configparser.ConfigParser()
-        config.read(".config")
+        for key, value in kwargs.items():
+            payload[key] = value
 
-        self.user_id = config["SESSION_INFO"]["user_id"]
-        pass
-        
+        payload_str = json.dumps(payload)
 
-    def createHeader(self, flag, message, recipientUser):
+        request = "`".join([header, payload_str])
+
+        return request
+
+    def send_request(self, request):
+        self.client_socket.sendto(request.encode("utf-8"), (self.SERVER_NAME, self.SERVER_PORT))
+
+    def createHeader(self, flag, message, chat_id):
 
         if flag == "LOGIN":
             return flag + "`" + self.user_id
 
         elif flag == "SEND":
-            return flag + "`" + self.user_id + recipientUser + message
+            return flag + "`" + self.user_id + chat_id + message
             #would probably change recipientUser to the chatID
 
         elif flag == "CHAT":
-            return flag + "`" + self.user_id + recipientUser
+            return flag + "`" + self.user_id + chat_id
             # recipientUser would be a list of users for a groupchat
 
         elif flag == "QUIT":
@@ -72,6 +66,13 @@ class Client:
 
         '''
         # TODO implement protocol into header'''
+
+    def send_message(self, message, chat_id):
+        request = self.create_request("SEND", message = message, chat_id = chat_id)
+
+        print(request)
+        self.send_request(request)
+
 
 
     def listenForMessage(self):

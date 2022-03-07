@@ -2,7 +2,6 @@ from tkinter import *
 from tkinter import messagebox
 from tkinter import ttk
 import configparser
-import main as hs
 from os import path
 
 class LoginScreen(object):
