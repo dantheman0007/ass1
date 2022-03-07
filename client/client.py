@@ -11,7 +11,7 @@ serverPort = 9999
 clientSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 
-username = input("Username (9 digit student number): \n")
+username = (input("Username (9 digit student number): \n")).upper()
 #recipientUser= ""
 
 # takes in input message from user
@@ -114,33 +114,6 @@ def main():
     
     listenInput = threading.Thread(target=listenForInput,)
     listenInput.start()
-
-    '''
-    while inChat:
-        usrmessage= input(f"{username} >")
-        if usrmessage == "quit":
-            clientSocket.sendto(createHeader("QUIT").encode('utf-8'),(serverName,serverPort))
-            print("Signing out...")
-            inChat(False)
-            break
-            #sys.exit("Disconnected")
-            # try:
-            #    os.kill(os.getpid(), signal.SIGINT)
-            # except:
-                
-
-        elif usrmessage== "get":
-            try:
-                receivedMessage, serverAddress = clientSocket.recvfrom(2048)
-                print(receivedMessage.decode('utf-8'))
-            except:
-                print("timed out")
-        else:
-            message = createHeader(usrmessage)
-            clientSocket.sendto(message.encode('utf-8'),(serverName,serverPort))
-    sys.exit(0)
-    # clientSocket.close()
-    '''
 
 
 if __name__ == "__main__":
