@@ -100,7 +100,6 @@ serverPort = 9999
 clientSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 '''
 
-username = ""
 #recipientUser= ""
 
 # takes in input message from user
@@ -197,8 +196,6 @@ def listenForMessage():
     
 #     listenInput = threading.Thread(target=listenForInput,)
 #     listenInput.start()
-
-   
 
 
 if __name__ == "__main__":
