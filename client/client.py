@@ -33,14 +33,7 @@ def createHeader(flag, message, recipientUser):
         return flag + "`" + username
 
     '''
-    # TODO implement protocol into header
-    if not message: # first message to server to see if recipientUser is in database
-        return username + recipientUser
-    else:
-        #print("creating header with message")
-        #print(message)
-        #return username+recipientUser+ message
-        return username+"000000000"+ message'''
+    # TODO implement protocol into header'''
 
 # runs in own thread
 def listenForMessage():
@@ -53,17 +46,26 @@ def listenForMessage():
 # runs in second thread
 def listenForInput(): # from user keyboard
 
-    recipientUser= input(f"Who would you like to talk to? \n{username}> ")
+    #recipientUser= input(f"Who would you like to talk to? \n{username}> ")
     inChat= True
     
     while inChat:
-        usrmessage= input(f"{username} >")
+        print("Enter one of the following keywords:")
+        print("CHAT - to start a chat")
+        print("SEND - to send a message")
+        print("QUIT - to logout")
+        usrmessage= input(f"{username} > ")
+        #recipientUser= input(f"Who would you like to talk to? \n{username}> ")
 
-        if usrmessage == "quit": # user disconnecting
+        if usrmessage == "QUIT": # user disconnecting
             clientSocket.sendto(createHeader("QUIT", "", "").encode('utf-8'),(serverName,serverPort))
+            #change online to false
             print("Signing out...")
-            inChat=False
-            return
+            #clientSocket.close()
+            quit()
+            #inChat=False
+            
+            #return
             # TODO properly exit program (can do it when gui done?)
             # try:
             #    os.kill(os.getpid(), signal.SIGINT)
@@ -83,7 +85,9 @@ def listenForInput(): # from user keyboard
             message = createHeader("CHAT","", users)
             clientSocket.sendto(message.encode('utf-8'),(serverName,serverPort))
         
-        else: # send message to server
+        elif usrmessage == "SEND": # send message to server
+            recipientUser= input(f"Who would you like to talk to? \n{username}> ")
+            usrmessage = input(f"Input message to send to {recipientUser}: ")
             message = createHeader("SEND",usrmessage, recipientUser)
             #print(message)
             #print("sending message")
