@@ -6,7 +6,7 @@ import sys
 import os
 import signal
 
-serverName = "127.0.0.1"
+serverName = "196.47.216.151"
 serverPort = 9999 
 clientSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
@@ -34,6 +34,12 @@ def createHeader(flag, message, recipientUser):
 
     '''
     # TODO implement protocol into header'''
+
+def myHash(text:str):
+  hash=0
+  for ch in text:
+    hash = ( hash*281  ^ ord(ch)*997) & 0xFFFFFFFF
+  return hash
 
 # runs in own thread
 def listenForMessage():
@@ -73,13 +79,7 @@ def listenForInput(): # from user keyboard
             # except:
                 
 
-        elif usrmessage== "get": # not used at the moment, need to wait for how protocol is done
-            try:
-                receivedMessage, serverAddress = clientSocket.recvfrom(2048)
-                print(receivedMessage.decode('utf-8'))
-            except:
-                print("timed out")
-        
+              
         elif usrmessage == "CHAT":
             users = input("Enter list of users separated by a space: ")
             message = createHeader("CHAT","", users)
@@ -115,33 +115,7 @@ def main():
     listenInput = threading.Thread(target=listenForInput,)
     listenInput.start()
 
-    '''
-    while inChat:
-        usrmessage= input(f"{username} >")
-        if usrmessage == "quit":
-            clientSocket.sendto(createHeader("QUIT").encode('utf-8'),(serverName,serverPort))
-            print("Signing out...")
-            inChat(False)
-            break
-            #sys.exit("Disconnected")
-            # try:
-            #    os.kill(os.getpid(), signal.SIGINT)
-            # except:
-                
-
-        elif usrmessage== "get":
-            try:
-                receivedMessage, serverAddress = clientSocket.recvfrom(2048)
-                print(receivedMessage.decode('utf-8'))
-            except:
-                print("timed out")
-        else:
-            message = createHeader(usrmessage)
-            clientSocket.sendto(message.encode('utf-8'),(serverName,serverPort))
-    sys.exit(0)
-    # clientSocket.close()
-    '''
-
+   
 
 if __name__ == "__main__":
     main()
