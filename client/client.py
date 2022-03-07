@@ -15,12 +15,14 @@ from tkinter import *
 
 class Client:
 
+
     SERVER_NAME = "10.0.0.10 "
     SERVER_PORT = 9999
 
     def __init__(self, parent) -> None:
         self.parent = parent
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
         host_name = socket.gethostname()
         client_ip = socket.gethostbyname(host_name)
         self.client_socket.bind((client_ip, 2789))
