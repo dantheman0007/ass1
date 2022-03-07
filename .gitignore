@@ -131,3 +131,5 @@ dmypy.json
 .config
 
 *.sqlite
+
+server/chatdb.sqlite
