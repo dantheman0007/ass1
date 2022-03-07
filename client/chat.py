@@ -24,7 +24,7 @@ class ChatScreen:
     def __init__(self, root, chat_id) -> None:
 
         self.root = root
-
+        self.root.geometry("580x450+850+300")
         self.ph = placeholder.Placeholder()
         self.chat_id = chat_id
 
