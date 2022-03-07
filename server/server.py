@@ -42,14 +42,16 @@ def sendMessage(senderID, receiver, message): # message should already be encode
         
 # this will be used to decode headers
 # TODO implement protocol into here
-def decodeHeader(datagram):
+def decodeDatagram(datagram):
 
     datagram = datagram.decode('utf-8')
-    info = datagram.split("`")
-    flag = info[0]
-    dgram = info[1]
-    sender= dgram[0:9]
+    datagram_list= datagram.split("`")
+    flag = datagram_list[0]
+    sender = datagram_list[1]
+    msg_content= datagram_list[2]
 
+    return(flag, sender, msg_content)
+    '''
     if flag == "LOGIN":
         return (flag, sender, "", "") 
     elif flag == "SEND":
@@ -61,7 +63,9 @@ def decodeHeader(datagram):
         return (flag, sender, receiver, "")
     elif flag == "QUIT":
         return(flag, sender, "", "")
-    
+    '''
+
+
 def main():
     
     print("The server is running...")
@@ -69,7 +73,7 @@ def main():
 
         message, clientAddress = serverSocket.recvfrom(2048)
         
-        flag, id, receiver, msg= decodeHeader(message)
+        flag, from, message_content= decodeDatagram(message)
 
         if flag == "LOGIN": # add the user to the database
             database.create_or_update(models.User, [{
@@ -124,7 +128,7 @@ def main():
         elif flag == "SEND":
             print("sending message")
             #add message to the database
-            #database.add_message(chat_id, msg, datetime.now(), id)
+            database.add_message(chat_id, msg, datetime.now(), id)
             #need to map the recipients to the chat_id
             sendMessage(id, receiver, msg)
 
