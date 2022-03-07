@@ -4,7 +4,8 @@ Defines all the data models used in the chat application
 
 from ipaddress import ip_address
 from turtle import back
-from sqlalchemy import Column, Integer, String, ForeignKey, Table, DateTime
+from xmlrpc.client import boolean
+from sqlalchemy import Column, Integer, String, ForeignKey, Table, DateTime, Boolean
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -24,9 +25,11 @@ user_chat = Table(
 class User(Base):
     __tablename__ = "user"
     user_id = Column(String, primary_key=True)
-    first_name = Column(String)
-    last_name = Column(String)
+    #first_name = Column(String)
+    #last_name = Column(String)
     ip_address = Column(String)
+    server_port = Column(String)
+    online_status = Column(Boolean)
     
     chats = relationship("Chat", secondary=user_chat, back_populates="users")
 

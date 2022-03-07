@@ -1,3 +1,4 @@
+from os import stat
 from re import search
 import sqlalchemy as sq
 import models
@@ -15,7 +16,7 @@ class DB():
 
     def __init__(self):
         """Initiates a connection with the database and starts a session"""
-        self.engine = sq.create_engine("sqlite:///{}".format(self.DATABASE_NAME), echo = True)
+        self.engine = sq.create_engine("sqlite:///{}".format(self.DATABASE_NAME), echo = False)
 
         self.connection = self.engine.connect()
         
@@ -163,3 +164,40 @@ class DB():
             })
 
         return chat_ids
+
+
+    def get_chat_from_users(self, user_id):
+        return "373c452a-c0b1-4e9f-abc7-37fa6efa943d"
+        pass
+
+    def get_or_create_chat(self, user_ids):
+        """
+        Creates a chat based off of a list of user ids, or returns an existing Chat object
+
+        Paramters:
+            user_ids (list): a list of user ids as strings
+        
+        Returns:
+            A Chat object of the chat associated with the given user_ids
+        """
+
+        new_chat_id = "-".join(sorted(user_ids))
+        print(new_chat_id)
+
+        chat = self.get_record_from_pk(models.Chat, new_chat_id)
+
+        if chat is None:
+            print("Chat doesn't exist, creating...")
+            chat = models.Chat( chat_id = new_chat_id, chat_name = "") 
+            self.session.add(chat)
+            self.session.commit()
+
+            print("Adding users...")
+            for user in user_ids:
+                chat.users.append(self.get_record_from_pk(models.User, user))
+            
+            self.session.commit()
+        
+        print("Done")
+        return chat
+      

@@ -2,12 +2,7 @@
 from tkinter import *
 from tkinter import ttk
 import configparser
-
 from functools import partial
-from click import command
-
-from sqlalchemy import column
-
 from datetime import datetime
 
 import placeholder
@@ -24,7 +19,7 @@ class ChatScreen:
     def __init__(self, root, chat_id) -> None:
 
         self.root = root
-
+        self.root.geometry("580x450+850+300")
         self.ph = placeholder.Placeholder()
         self.chat_id = chat_id
 
@@ -75,17 +70,17 @@ class ChatScreen:
         send_button = ttk.Button(message_frame, command=self.send_message, text="Send")
         send_button.grid(column=1, row = 2)
 
-        ttk.Label(mainframe, text = "Chats for {}".format(self.user_name)).grid(row=0, column = 0)
+        ttk.Label(mainframe, text = "Chats for {}".format(self.user_id)).grid(row=0, column = 0)
 
 
     def send_message(self, *args):
         out_dict = {
-            "msg_content": self.new_message.get(),
+            "msg_content": self.message_compose.get(),
             "timestamp": datetime.strftime(datetime.now(), "%d/%m/%Y at %H:%M:%S"),
             "from_id": self.user_id
         }
-
-        self.message_compose.delete(first = 0, last= len(self.new_message.get()))
+        
+        self.message_compose.delete(first = 0, last= len(self.message_compose.get()))
 
         self.write_message(out_dict)
         pass
@@ -128,7 +123,6 @@ class ChatScreen:
         config.read(".config")
 
         self.user_id = config["SESSION_INFO"]["user_id"]
-        self.user_name = config["SESSION_INFO"]["user_name"]
 
 
 

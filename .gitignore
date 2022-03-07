@@ -128,12 +128,8 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-<<<<<<< HEAD
-# files
-test.py
-.DS_Store
-=======
 .config
 
 *.sqlite
->>>>>>> master
+
+server/chatdb.sqlite
