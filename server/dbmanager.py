@@ -124,6 +124,7 @@ def start_chat():
     Creates a new chat in the database
     """
     users = input("Enter list of users separated by a space: ").split(" ")
+    
     print(users)
     
     d = db.DB()
@@ -139,8 +140,10 @@ def start_chat():
     d.session.commit()
         
 
-    
-
+def init_db():
+    create_new_db()
+    add_users()
+    add_chats()
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -169,6 +172,18 @@ if __name__ == "__main__":
     
     elif args.command == "start_chat":
         start_chat()
+
+    elif args.command == "init":
+        init_db()
+
+    elif args.command == "get_chats":
+        users = input("Users: ").split()
+        d = db.DB()
+
+        chat = d.get_or_create_chat(users)
+
+        print(chat.chat_id)
+        
 
     else:
         print("Unrecognized command")
