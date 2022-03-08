@@ -88,21 +88,6 @@ def decodeDatagram(datagram):
 
     return(flag, sender, msg_content)
 
-    '''
-    if flag == "LOGIN":
-        return (flag, sender, "", "") 
-    elif flag == "SEND":
-        receiver= dgram[9:18]
-        senderMessage= dgram[18:]
-        return (flag, sender, receiver, senderMessage)
-    elif flag == "CHAT":
-        receiver = dgram[9:] #list of users (can be one) to chat with, separated by spaces
-        return (flag, sender, receiver, "")
-    elif flag == "QUIT":
-        return(flag, sender, "", "")
-    '''
-
-
 def main():
     '''Main method that listens for input from clients and responds to the messages in different ways, depending on the flags.'''
 
@@ -153,6 +138,28 @@ def main():
                 # message is sent to the client if the user that they tried to create the chat with does not exist
                 err = "User " + notThere + " does not exist. Chat cannot be created."
                 serverSocket.sendto(err.encode(), clientAddress)
+
+        elif flag == "HISTORY":
+            message_dict = json.loads(message_content)
+            chat = message_dict["chat_id"]
+            header = "`".join(["HISTORY", sender])
+
+            msgs = []
+
+            for msg in database.get_chat_messages(chat_id=chat):
+                msg_dict = {
+                    "message_id": msg.message_id,
+                    "content": msg.content,
+                    "timestamp": datetime.strftime(msg.timestamp, "%d/%m/%Y at %H:%M:%S"),
+                    "from_id": msg.from_id
+                }
+                msgs.append(msg_dict)
+
+            final_dict = {"chat_id": chat, "messages": msgs}
+            msgs_str = json.dumps(final_dict)
+            response = "`".join([header,msgs_str])
+            serverSocket.sendto(response.encode('utf-8'), clientAddress)    
+
 
         elif flag == "SEND": #sends a message to a chat using the chat_id
             print("sending message")
