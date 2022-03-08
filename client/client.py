@@ -13,6 +13,8 @@ import main
 from os import path
 from tkinter import *
 
+from server.server import sendMessage
+
 class Client:
 
 
@@ -97,8 +99,12 @@ class Client:
         self.parent.chat_screens[chat_id].write_message(payload)
         
         pass
-
-
+    
+    def myHash(self, text):
+        hash=0
+        for ch in text:
+            hash = ( hash*281  ^ ord(ch)*997) & 0xFFFFFFFF
+        return hash
 '''
 serverName = "127.0.0.1"
 serverPort = 9999 
@@ -125,16 +131,6 @@ clientSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 #     elif flag == "QUIT":
 #         return flag + "`" + username
-
-
-#     '''
-#     # TODO implement protocol into header'''
-
-# def myHash(text:str):
-#   hash=0
-#   for ch in text:
-#     hash = ( hash*281  ^ ord(ch)*997) & 0xFFFFFFFF
-#   return hash
 
 
 # '''
