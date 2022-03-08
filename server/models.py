@@ -13,6 +13,7 @@ from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 
+# a table that maps the user_id to the chat_id
 user_chat = Table(
     "user_chat",
     Base.metadata,
@@ -23,10 +24,9 @@ user_chat = Table(
 
 
 class User(Base):
+    '''Class that represents a User table with columns for the user's id, IP address, port number and online status.'''
     __tablename__ = "user"
     user_id = Column(String, primary_key=True)
-    #first_name = Column(String)
-    #last_name = Column(String)
     ip_address = Column(String)
     server_port = Column(String)
     online_status = Column(Boolean)
@@ -34,6 +34,7 @@ class User(Base):
     chats = relationship("Chat", secondary=user_chat, back_populates="users")
 
 class Message(Base):
+    '''Class that represents a Message table with a message id, timestamp that it was sent and the content of the message.'''
     __tablename__ = "message"
     message_id = Column(String, primary_key=True)
     timestamp = Column(DateTime)
@@ -46,6 +47,7 @@ class Message(Base):
         return self.content
 
 class Chat(Base):
+    '''Class that represents a Chat table with an id and name.'''
     __tablename__ = "chat"
     chat_id = Column(String, primary_key=True)
     chat_name = Column(String)
