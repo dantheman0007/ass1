@@ -56,7 +56,8 @@ class ChatScreen:
             self.message_box.tag_configure("regular_text", font=("Calibri", 10))
             
             # Writes the message history to the chat box
-            #self.write_messages()
+
+            # self.write_messages()
             
             # New message input
             self.new_message = StringVar()
