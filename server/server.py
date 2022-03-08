@@ -29,7 +29,7 @@ def sendMessage(flag, out_message):
             
             response_body =  {
                 "content": out_message.content,
-                "timestamp": out_message.timestamp,
+                "timestamp": datetime.strftime(out_message.timestamp, "%d/%m/%Y at %H:%M:%S")  ,
                 "chat_id": out_message.chat_id,
                 "from_id": out_message.from_id,
             }
