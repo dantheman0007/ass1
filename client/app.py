@@ -10,7 +10,10 @@ class ChatApp(object):
 
     chats = list()
     chat_screens = dict()
-
+    
+    SERVER_NAME = "196.47.216.151"
+    SERVER_PORT = 9999
+    
     def __init__(self) -> None:
         self.ph = placeholder.Placeholder()
 
@@ -38,9 +41,13 @@ class ChatApp(object):
         self.client = client.Client(self)
         self.hs= home.HomeScreen(self)
 
-    def open_chat_screen(self, chat_id, *args):
-        self.ph.get_messages(chat_id)
-        self.chat_screens[chat_id] = chat.ChatScreen(self, chat_id)
+    def fetch_messages(self, chat_id, *args):
+        self.client.get_messages(chat_id)
+        
+        
+
+    def open_chat_screen(self, chats):
+        self.chat_screens[chats["chat_id"]] = chat.ChatScreen(self, chats)
 
     def start_new_chat(self, user_ids):
         print(user_ids)

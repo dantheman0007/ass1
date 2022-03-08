@@ -39,7 +39,18 @@ class LoginScreen(object):
 
         ttk.Label(mainframe, text="Student Number:").grid(column=1, row = 1, sticky=W)
 
-        ttk.Button(mainframe, text = "Log in", command=self.login).grid(column= 3, row =1, sticky = W)
+
+        
+        self.ip_entry = ttk.Entry(mainframe, width= 20)
+
+        ## Used for testing purposes
+        self.ip_entry.insert(0, "192.168.0.136")
+
+        self.ip_entry.grid(column=2, row= 2, sticky=(W, E))
+
+        ttk.Label(mainframe, text="Server IP:").grid(column=1, row = 2, sticky=W)
+
+        ttk.Button(mainframe, text = "Log in", command=self.login).grid(column= 2, row =3, sticky = W)
 
         for child in mainframe.winfo_children(): 
             child.grid_configure(padx=5, pady=5)
@@ -62,7 +73,7 @@ class LoginScreen(object):
             with open(".config", "w") as configfile:
                 config.write(configfile)
             
-
+            self.parent.SERVER_NAME = self.ip_entry.get()
             self.parent.open_home(uid)
             self.root.destroy()
         else:

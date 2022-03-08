@@ -57,8 +57,8 @@ class HomeScreen(object):
                 l = ttk.Label(f, text = cid)
                 l.grid(row = i, column =0,sticky=W)
 
-                f.bind("<Button-1>", partial(self.parent.open_chat_screen, chat["chat_id"]))
-                l.bind("<Button-1>", partial(self.parent.open_chat_screen, chat["chat_id"]))
+                f.bind("<Button-1>", partial(self.parent.fetch_messages, chat["chat_id"]))
+                l.bind("<Button-1>", partial(self.parent.fetch_messages, chat["chat_id"]))
     
                 frames.append(f)
 
