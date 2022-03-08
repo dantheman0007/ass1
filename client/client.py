@@ -23,7 +23,7 @@ class Client:
         host_name = socket.gethostname()
         client_ip = socket.gethostbyname(host_name)
         print(client_ip)
-        self.client_socket.bind(("192.168.43.13", 2789))
+        self.client_socket.bind((self.SERVER_NAME, self.SERVER_PORT))
         
 
 
@@ -94,7 +94,7 @@ class Client:
           "timestamp": "",
            "from_id": "MRRJUL007"
            }
-        
+        print(payload)
         self.parent.chat_screens[chat_id].write_message(payload)
         
         pass
