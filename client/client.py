@@ -15,7 +15,7 @@ from server.server import sendMessage
 class Client:
 
 
-    SERVER_NAME = "127.0.0.1"
+    SERVER_NAME = "196.47.216.151"
     SERVER_PORT = 9999
 
     def __init__(self, parent) -> None:
@@ -24,10 +24,8 @@ class Client:
 
         host_name = socket.gethostname()
         client_ip = socket.gethostbyname(host_name)
-        print(client_ip)
-        self.client_socket.bind((self.SERVER_NAME, self.SERVER_PORT))
-        
 
+        self.login()
 
         listenMessage = threading.Thread(target=self.listenForMessage, )
         listenMessage.start()
@@ -48,6 +46,7 @@ class Client:
         return request
 
     def send_request(self, request):
+        print("Sending: "+request)
         self.client_socket.sendto(request.encode("utf-8"), (self.SERVER_NAME, self.SERVER_PORT))
 
     def createHeader(self, flag, message, chat_id):
@@ -72,23 +71,45 @@ class Client:
     def send_message(self, message, chat_id):
         request = self.create_request("SEND", message = message, chat_id = chat_id)
 
-        print(request)
+        print("Sending message: " + request)
         self.send_request(request)
 
+    def login(self):
+        request = self.create_request("LOGIN")
+        self.send_request(request)
+
+    def new_chat(self, users):
+        print("Making new chat with: ", users)
+        request = self.create_request("CHAT", receivers = users)
+        self.send_request(request)
+        pass
 
 
     def listenForMessage(self):
-   
         while True:
             receivedMessage, serverAddress = self.client_socket.recvfrom(2048)
-
-            self.message_received(receivedMessage.decode())
-            
             print(receivedMessage.decode())
+            self.decode_message(receivedMessage.decode())
+            
+            
+    def decode_message(self, response):
 
+        response = response.split("`")
+        flag = response[0]
+        sender = response[1]
+        msg_content= response[2]
+
+        if flag == "CHATS":
+            self.parent.chats = json.loads(msg_content)
+            print("Parent chats:",  self.parent.chats)
+
+        elif flag == "SEND":
+            payload = json.loads(msg_content)
+            self.parent.chat_screens[payload["chat_id"]].write_message(payload)
+
+        pass
 
     def message_received(self, message):
-        print("Hello")
         # DO somethinf to print ot the screen
         chat_id = "167831c0-be28-4689-b040-49048118956e"
         payload = {"message_id": "abc",
@@ -96,7 +117,7 @@ class Client:
           "timestamp": "",
            "from_id": "MRRJUL007"
            }
-        print(payload)
+        print(message)
         self.parent.chat_screens[chat_id].write_message(payload)
         
         pass

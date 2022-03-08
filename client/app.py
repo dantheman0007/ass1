@@ -15,7 +15,7 @@ class ChatApp(object):
         self.ph = placeholder.Placeholder()
 
         self.load_config()
-        self.client = client.Client(self)
+        
         
         self.root = Tk()
 
@@ -28,7 +28,7 @@ class ChatApp(object):
         pass
 
     def open_home(self):
-        self.load_chats()
+        self.client = client.Client(self)
         self.hs= home.HomeScreen(self)
 
     def open_chat_screen(self, chat_id, *args):
@@ -39,7 +39,9 @@ class ChatApp(object):
         print(user_ids)
 
     def load_chats(self):
-            self.chats = self.ph.ph_get_chats(self.user_id)
+            #self.chats = self.ph.ph_get_chats(self.user_id)
+        pass
+
 
     def load_config(self):
 
