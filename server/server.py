@@ -6,6 +6,7 @@ import models
 import db
 import sqlalchemy
 from datetime import datetime
+import json
 
 serverPort = 9999 
 serverSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # initialising server object
@@ -51,6 +52,7 @@ def decodeDatagram(datagram):
     msg_content= datagram_list[2]
 
     return(flag, sender, msg_content)
+
     '''
     if flag == "LOGIN":
         return (flag, sender, "", "") 
@@ -73,21 +75,30 @@ def main():
 
         message, clientAddress = serverSocket.recvfrom(2048)
         
-        flag, from, message_content= decodeDatagram(message)
+        flag, sender, message_content= decodeDatagram(message)
 
         if flag == "LOGIN": # add the user to the database
             database.create_or_update(models.User, [{
-                "user_id": id,
+                "user_id": sender,
                 "ip_address": clientAddress[0], # if user is already in database, will just update IP address
                 "server_port": clientAddress[1],
                 "online_status": True
             }], "user_id")
-            print(id + " has logged in.")
-            loginConfirm = "Login successful."
-            serverSocket.sendto(loginConfirm.encode(), clientAddress)
+            print(sender + " has logged in.")
+
+            # dont think we need this?
+            #loginConfirm = "Login successful."
+            #serverSocket.sendto(loginConfirm.encode(), clientAddress)
 
             #print out all of the chats that the user is a part of
-            chats = database.get_user_chats(id)
+            chats = database.get_user_chats(sender)
+            header = "`".join(["CHATS", sender])
+            
+            chats_str = json.dumps(chats)
+            response = "`".join([header,chats_str])
+            serverSocket.sendto(response.encode('utf-8'), clientAddress)
+            
+            '''            
             allChats = "Available chats: \n"
 
             for x in chats:
@@ -96,9 +107,8 @@ def main():
                     allChats = allChats + temp + " \n"
                 else:
                     allChats = allChats + temp
-                
-
-            serverSocket.sendto(allChats.encode(), clientAddress)
+            '''    
+            
 
 
         elif flag == "CHAT": 
@@ -127,8 +137,9 @@ def main():
 
         elif flag == "SEND":
             print("sending message")
-            #add message to the database
-            database.add_message(chat_id, msg, datetime.now(), id)
+            # need to decode json message
+            # to get chatid, message content
+            database.add_message(chat_id, msg, datetime.now(), sender)
             #need to map the recipients to the chat_id
             sendMessage(id, receiver, msg)
 
