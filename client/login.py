@@ -63,7 +63,7 @@ class LoginScreen(object):
                 config.write(configfile)
             
 
-            self.parent.open_home()
+            self.parent.open_home(uid)
             self.root.destroy()
         else:
             messagebox.showerror(self.root, "Please enter a valid student number")

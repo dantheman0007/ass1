@@ -27,7 +27,14 @@ class ChatApp(object):
 
         pass
 
-    def open_home(self):
+    def open_home(self, user_id):
+
+        config = configparser.ConfigParser()
+        config.read(".config")
+
+        config["SESSION_INFO"]["user_id"] = user_id
+        self.user_id = user_id
+        
         self.client = client.Client(self)
         self.hs= home.HomeScreen(self)
 
