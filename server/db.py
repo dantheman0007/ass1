@@ -92,7 +92,7 @@ class DB():
             }
         ]
 
-        self.create_or_update(models.Message, msg_data, "message_id")
+        return self.create_or_update(models.Message, msg_data, "message_id")
 
     def get_chat_messages(self, chat_id):
         """
