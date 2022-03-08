@@ -79,8 +79,12 @@ class ChatScreen:
                 "from_id": self.user_id
             }
             
+            self.parent.client.send_message(self.message_compose.get(), self.chat_id)
+
+            
             self.message_compose.delete(first = 0, last= len(self.message_compose.get()))
 
+            
             self.write_message(out_dict)
             pass
 
