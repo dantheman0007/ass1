@@ -20,11 +20,26 @@ def myHash(text:str):
     hash = ( hash*281  ^ ord(ch)*997) & 0xFFFFFFFF
   return hash
 
-# takes in the message from sender and sends to receiver
-def sendMessage(senderID, receiver, message): # message should already be encoded
+def sendMessage(flag, out_message):
     
-    # TODO make loop to go over everyone in list from db
-    
+    receivers = out_message.chat_id.split("-")
+    for user in receivers:
+        if user != out_message.from_id:
+            rec = database.get_record_from_pk(models.User, user)
+            
+            response_body =  {
+                "content": out_message.content,
+                "timestamp": out_message.timestamp,
+                "chat_id": out_message.chat_id,
+                "from_id": out_message.from_id,
+            }
+
+            response_body = json.dumps(response_body)
+            header = "`".join([flag, out_message.from_id])
+            response = "`".join([header,response_body])
+            serverSocket.sendto(response.encode('utf-8'),(rec.ip_address, int(rec.server_port)))
+            
+    '''
     rec = database.get_record_from_pk(models.User, receiver)
 
     if rec == None:
@@ -39,7 +54,7 @@ def sendMessage(senderID, receiver, message): # message should already be encode
     
     else:
         serverSocket.sendto(message.encode(),(rec.ip_address, int(rec.server_port)))
-
+    '''
         
 # this will be used to decode headers
 # TODO implement protocol into here
@@ -74,7 +89,7 @@ def main():
     while True:
 
         message, clientAddress = serverSocket.recvfrom(2048)
-        
+        print(message)
         flag, sender, message_content= decodeDatagram(message)
 
         if flag == "LOGIN": # add the user to the database
@@ -112,10 +127,11 @@ def main():
 
 
         elif flag == "CHAT": 
-            receiver = id + " " + receiver
-            receivers = receiver.split(" ") #list of receivers, one for normal chat, multiple for group
+            message_dict = json.loads(message_content)
+            receivers = message_dict["receivers"]
             canCreate = True
             notThere = ""
+            
             for receiver in receivers:
                 temp = database.get_record_from_pk(models.User, receiver)
                 if temp == None:
@@ -124,24 +140,27 @@ def main():
                     break
 
             if canCreate == True:
+                print("chat created")
+                print(receivers)
                 database.get_or_create_chat(receivers)
             else:
                 err = "User " + notThere + " does not exist. Chat cannot be created."
                 serverSocket.sendto(err.encode(), clientAddress)
 
-
+            '''
             try:
                 database.get_or_create_chat(receivers)
             except sqlalchemy.orm.exc.FlushError:
-                print("User does not exist in the database.")
+                print("User does not exist in the database.")'''
 
         elif flag == "SEND":
             print("sending message")
-            # need to decode json message
-            # to get chatid, message content
-            database.add_message(chat_id, msg, datetime.now(), sender)
-            #need to map the recipients to the chat_id
-            sendMessage(id, receiver, msg)
+            message_dict = json.loads(message_content)
+
+            msg = message_dict["message"]
+            chat_id = message_dict["chat_id"]
+            new_message = database.add_message(chat_id, msg, datetime.now(), sender)
+            sendMessage(flag, new_message)
 
         elif flag == "QUIT":
             database.create_or_update(models.User, [{
