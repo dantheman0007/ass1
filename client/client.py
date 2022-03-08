@@ -10,7 +10,6 @@ from os import path
 import json
 from tkinter import *
 
-from server.server import sendMessage
 
 class Client:
 
