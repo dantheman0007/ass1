@@ -14,7 +14,7 @@ class HomeScreen(object):
             self.root = Toplevel(parent.root)
 
             self.chats = self.parent.chats
-            
+            print("Home: ", self.chats)
             self.root.title("Home")
             self.root.geometry("550x400+300+300")
             
@@ -38,13 +38,23 @@ class HomeScreen(object):
 
             btn_new_chat.grid(row = 0, column= 4)
 
+            btn_refresh = ttk.Button(self.chats_frame, text = "Refresh", command = self.redraw_chat_frame)
+
+            btn_refresh.grid(row = 0, column= 5)
+
             for i, chat in enumerate(self.parent.chats):
 
                 f = ttk.Frame(self.chats_frame, relief="solid", borderwidth=5, width=200, height= 100, padding=10)
                 f.grid(row = i+1, column =4, columnspan=4, sticky=(E, W) ,pady=5)
                 
+                cid = chat["chat_id"].split("-")
+                cid.remove(self.parent.user_id)
 
-                l = ttk.Label(f, text = chat["chat_name"])
+                if len(cid) > 1:
+                    cid = " - ".join(cid)
+
+                
+                l = ttk.Label(f, text = cid)
                 l.grid(row = i, column =0,sticky=W)
 
                 f.bind("<Button-1>", partial(self.parent.open_chat_screen, chat["chat_id"]))
@@ -76,12 +86,12 @@ class HomeScreen(object):
             
             users = entry.get().split()
             users.append(self.parent.user_id)
-            self.parent.start_new_chat(users)
+            self.parent.client.new_chat(users)
             top.destroy()
             self.redraw_chat_frame()
             
 
-        def redraw_chat_frame(self):
+        def redraw_chat_frame(self, *args):
             self.parent.load_chats()
             self.chats_frame.grid_forget()
             self.draw_gui()
