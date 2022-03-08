@@ -56,7 +56,7 @@ class ChatScreen:
             self.message_box.tag_configure("regular_text", font=("Calibri", 10))
             
             # Writes the message history to the chat box
-            self.write_messages()
+            #self.write_messages()
             
             # New message input
             self.new_message = StringVar()
@@ -74,7 +74,7 @@ class ChatScreen:
 
         def send_message(self, *args):
             out_dict = {
-                "msg_content": self.message_compose.get(),
+                "content": self.message_compose.get(),
                 "timestamp": datetime.strftime(datetime.now(), "%d/%m/%Y at %H:%M:%S"),
                 "from_id": self.user_id
             }
@@ -104,7 +104,7 @@ class ChatScreen:
                 ("muted", justify_right))
 
             self.message_box.insert("end", 
-                message_dict["msg_content"]+"\n\n", (justify_right, "regular_text",))
+                message_dict["content"]+"\n\n", (justify_right, "regular_text",))
 
 
         def write_messages(self):
