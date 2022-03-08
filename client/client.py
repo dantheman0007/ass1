@@ -10,12 +10,11 @@ from os import path
 import json
 from tkinter import *
 
+from flask import request
+
 
 class Client:
 
-
-    SERVER_NAME = "196.47.216.151"
-    SERVER_PORT = 9999
 
     def __init__(self, parent) -> None:
         self.parent = parent
@@ -46,7 +45,7 @@ class Client:
 
     def send_request(self, request):
         print("Sending: "+request)
-        self.client_socket.sendto(request.encode("utf-8"), (self.SERVER_NAME, self.SERVER_PORT))
+        self.client_socket.sendto(request.encode("utf-8"), (self.parent.SERVER_NAME, self.parent.SERVER_PORT))
 
     def createHeader(self, flag, message, chat_id):
 
@@ -83,10 +82,16 @@ class Client:
         self.send_request(request)
         pass
 
+    def refresh_chats(self):
+        pass
+
+    def get_messages(self, chat_id):
+        request = self.create_request("HISTORY", chat_id = chat_id)
+        self.send_request(request)
 
     def listenForMessage(self):
         while True:
-            receivedMessage, serverAddress = self.client_socket.recvfrom(2048)
+            receivedMessage, serverAddress = self.client_socket.recvfrom(1000000)
             print(receivedMessage.decode())
             self.decode_message(receivedMessage.decode())
             
@@ -105,6 +110,11 @@ class Client:
         elif flag == "SEND":
             payload = json.loads(msg_content)
             self.parent.chat_screens[payload["chat_id"]].write_message(payload)
+        
+        elif flag == "HISTORY":
+            payload = json.loads(msg_content)
+
+            self.parent.open_chat_screen(payload)
 
         pass
 
@@ -116,7 +126,6 @@ class Client:
           "timestamp": "",
            "from_id": "MRRJUL007"
            }
-        print(message)
         self.parent.chat_screens[chat_id].write_message(payload)
         
         pass

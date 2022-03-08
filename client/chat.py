@@ -9,23 +9,27 @@ import json
 
 
 class ChatScreen:
-
-        chats = []
-
         user_id = None
 
+        messages = []
 
-        def __init__(self, parent, chat_id) -> None:
+        def __init__(self, parent, chats) -> None:
             self.parent = parent
             self.root = Toplevel(parent.root)
             self.root.geometry("580x550+850+300")
+            self.root.protocol("WM_DELETE_WINDOW", self.save_to_file)
+
+
             self.ph = placeholder.Placeholder()
-            self.chat_id = chat_id
-
-            self.load_config()
             
-            self.load_chat_data()
-
+            self.chat_id = chats["chat_id"]
+            self.messages = chats["messages"]
+            
+            self.participants = self.chat_id.split("-")
+            self.participants.remove(self.parent.user_id)
+            
+            if len(self.participants) > 1:
+                    self.participants = " - ".join(self.participants)
 
             self.root.title("Chat")
 
@@ -57,7 +61,7 @@ class ChatScreen:
             
             # Writes the message history to the chat box
 
-            # self.write_messages()
+            self.write_messages()
             
             # New message input
             self.new_message = StringVar()
@@ -70,28 +74,30 @@ class ChatScreen:
             send_button = ttk.Button(message_frame, command=self.send_message, text="Send")
             send_button.grid(column=1, row = 2)
 
-            ttk.Label(mainframe, text = "Chats for {}".format(self.user_id)).grid(row=0, column = 0)
+            ttk.Label(mainframe, text = "Chat with {}".format(self.participants)).grid(row=0, column = 0)
 
 
         def send_message(self, *args):
             out_dict = {
                 "content": self.message_compose.get(),
                 "timestamp": datetime.strftime(datetime.now(), "%d/%m/%Y at %H:%M:%S"),
-                "from_id": self.user_id
+                "from_id": self.parent.user_id
             }
             
             self.parent.client.send_message(self.message_compose.get(), self.chat_id)
-
+            
             
             self.message_compose.delete(first = 0, last= len(self.message_compose.get()))
-
-            
             self.write_message(out_dict)
             pass
 
 
+        def save_to_file(self):
+            self.root.destroy()
+
+
         def write_message(self, message_dict):
-            if self.user_id == message_dict["from_id"]:
+            if self.parent.user_id == message_dict["from_id"]:
                 justify_right = "just_right"
             else:
                 justify_right = ""
@@ -110,20 +116,7 @@ class ChatScreen:
 
         def write_messages(self):
 
-            for i, message in enumerate(self.chat_data["messages"]):
+            for i, message in enumerate(self.messages):
 
                 self.write_message(message)
 
-
-        def load_chat_data(self):
-            with open("chats/{}.json".format(self.chat_id), "r") as read_file:
-                self.chat_data = json.load(read_file)
-
-            self.participants = self.chat_data["chat_participants"]
-
-
-        def load_config(self):
-            config = configparser.ConfigParser()
-            config.read(".config")
-
-            self.user_id = config["SESSION_INFO"]["user_id"]
