@@ -57,6 +57,7 @@ class Client:
         print("Making new chat with: ", users)
         request = self.create_request("CHAT", receivers = users)
         self.send_request(request)
+        self.parent.hs.draw_gui()
         pass
 
     def refresh_chats(self):
