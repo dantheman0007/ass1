@@ -9,7 +9,7 @@ from os import path
 import json
 from tkinter import *
 
-
+# print (u'\u2713') TICK SYMBOL
 class Client:
 
 
