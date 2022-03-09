@@ -10,8 +10,6 @@ from os import path
 import json
 from tkinter import *
 
-from flask import request
-
 
 class Client:
 
