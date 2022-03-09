@@ -3,7 +3,7 @@ import threading
 import json
 from tkinter import *
 
-
+# print (u'\u2713') TICK SYMBOL
 class Client:
     """
     Client class that handles communication between the server and the GUI
