@@ -5,7 +5,6 @@ import threading
 import sys
 import os
 import signal
-import configparser
 from os import path
 import json
 from tkinter import *

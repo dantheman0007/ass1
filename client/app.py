@@ -1,9 +1,9 @@
 from tkinter import *
-import configparser
 from os import path
 from functools import partial
 from datetime import datetime
 import client
+import configparser
 import login, home, chat
 
 class ChatApp(object):
@@ -14,10 +14,8 @@ class ChatApp(object):
     SERVER_NAME = "196.47.216.151"
     SERVER_PORT = 9999
     
-    def __init__(self) -> None:
+    def __init__(self) -> None:        
         self.load_config()
-        
-        
         self.root = Tk()
 
         self.loginScreen = login.LoginScreen(self)
@@ -29,11 +27,15 @@ class ChatApp(object):
         pass
 
     def open_home(self, user_id):
-
         config = configparser.ConfigParser()
         config.read(".config")
 
-        config["SESSION_INFO"]["user_id"] = user_id
+        config["SESSION_INFO"]["server_ip"] = self.SERVER_NAME
+
+        with open(".config", "w") as configfile:
+            config.write(configfile)
+
+
         self.user_id = user_id
         
         self.client = client.Client(self)
@@ -54,14 +56,13 @@ class ChatApp(object):
             #self.chats = self.ph.ph_get_chats(self.user_id)
         pass
 
-
     def load_config(self):
 
         if not path.exists(".config"):
             config = configparser.ConfigParser()
 
             config["SESSION_INFO"] = {
-                "user_id": ""
+                "server_ip": ""
             }
 
             with open(".config", "w") as configfile:
@@ -71,8 +72,7 @@ class ChatApp(object):
         config = configparser.ConfigParser()
         config.read(".config")
 
-        self.user_id = config["SESSION_INFO"]["user_id"]
-
+        self.SERVER_NAME = config["SESSION_INFO"]["server_ip"]
 
 
 

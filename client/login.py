@@ -1,7 +1,6 @@
 from tkinter import *
 from tkinter import messagebox
 from tkinter import ttk
-import configparser
 from os import path
 
 class LoginScreen(object):
@@ -43,8 +42,7 @@ class LoginScreen(object):
         
         self.ip_entry = ttk.Entry(mainframe, width= 20)
 
-        ## Used for testing purposes
-        self.ip_entry.insert(0, "192.168.0.136")
+        self.ip_entry.insert(0, self.parent.SERVER_NAME)
 
         self.ip_entry.grid(column=2, row= 2, sticky=(W, E))
 
@@ -63,16 +61,6 @@ class LoginScreen(object):
         uid = self.user_id.get()
 
         if self.validate_uid(uid):
-            config = configparser.ConfigParser()
-            config.read(".config")
-
-            ## TALK TO DB
-
-            config["SESSION_INFO"]["user_id"] = uid
-
-            with open(".config", "w") as configfile:
-                config.write(configfile)
-            
             self.parent.SERVER_NAME = self.ip_entry.get()
             self.parent.open_home(uid)
             self.root.destroy()

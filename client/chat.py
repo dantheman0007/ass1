@@ -1,6 +1,5 @@
 from tkinter import *
 from tkinter import ttk
-import configparser
 from functools import partial
 from datetime import datetime
 import json
