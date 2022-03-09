@@ -9,6 +9,7 @@ class HomeScreen(object):
 
             self.parent = parent
             self.root = Toplevel(parent.root)
+            self.root.protocol("WM_DELETE_WINDOW", self.log_out)
 
             self.chats = self.parent.chats
             print("Home: ", self.chats)
@@ -21,6 +22,11 @@ class HomeScreen(object):
             pass
 
 
+        def log_out(self):
+            self.parent.client.log_out()
+            self.parent.root.destroy()
+
+        
         def draw_gui(self):
             self.mainframe = ttk.Frame(self.root, padding = 10)
             self.mainframe.grid(column=0, row=0)

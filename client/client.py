@@ -66,7 +66,7 @@ class Client:
     def refresh_chats(self):
         pass
 
-    def log_out(self, ):
+    def log_out(self):
         print("Logging off.") 
         request = self.create_request("QUIT")
         self.send_request(request)
@@ -81,6 +81,7 @@ class Client:
             receivedMessage, serverAddress = self.client_socket.recvfrom(1000000)
             print(receivedMessage.decode())
             self.decode_message(receivedMessage.decode())
+            
         return
             
             
@@ -103,6 +104,9 @@ class Client:
             payload = json.loads(msg_content)
 
             self.parent.open_chat_screen(payload)
+
+        elif flag == "QUIT":
+            self.stop()
 
         pass
 

@@ -177,6 +177,15 @@ def main():
             }], "user_id")
             print(id + " has gone offline")
 
+            header = "`".join["QUIT", sender]
+            body = dict()
+
+            response = "`".join([header, json.dumps(body)])
+            serverSocket.sendto(response.encode('utf-8'), clientAddress)    
+
+
+
+
         
 if __name__ == "__main__":
     main()
