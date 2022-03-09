@@ -114,6 +114,14 @@ def main():
             chats_str = json.dumps(chats)
             response = "`".join([header,chats_str])
             serverSocket.sendto(response.encode('utf-8'), clientAddress)
+        
+        elif flag == "CHATS":
+            chats = database.get_user_chats(sender)
+            header = "`".join(["CHATS", sender])
+            
+            chats_str = json.dumps(chats)
+            response = "`".join([header,chats_str])
+            serverSocket.sendto(response.encode('utf-8'), clientAddress)
 
         elif flag == "CHAT": #creates a new chat with the specified users if one does not already exist
             message_dict = json.loads(message_content)
@@ -172,12 +180,12 @@ def main():
 
         elif flag == "QUIT": #changes the user's online status to false
             database.create_or_update(models.User, [{
-                "user_id": id,
+                "user_id": sender,
                 "online_status": False
             }], "user_id")
-            print(id + " has gone offline")
+            print(sender+ " has gone offline")
 
-            header = "`".join["QUIT", sender]
+            header = "`".join(["QUIT",sender])
             body = dict()
 
             response = "`".join([header, json.dumps(body)])
