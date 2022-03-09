@@ -2,8 +2,6 @@ from tkinter import *
 from tkinter import ttk
 import configparser
 from functools import partial
-import placeholder
-
 
 class HomeScreen(object):
 

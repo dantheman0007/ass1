@@ -4,7 +4,7 @@ from os import path
 from functools import partial
 from datetime import datetime
 import client
-import login, home, chat, placeholder
+import login, home, chat
 
 class ChatApp(object):
 
@@ -15,8 +15,6 @@ class ChatApp(object):
     SERVER_PORT = 9999
     
     def __init__(self) -> None:
-        self.ph = placeholder.Placeholder()
-
         self.load_config()
         
         

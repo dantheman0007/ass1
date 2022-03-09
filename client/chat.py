@@ -3,8 +3,6 @@ from tkinter import ttk
 import configparser
 from functools import partial
 from datetime import datetime
-
-import placeholder
 import json
 
 
@@ -18,9 +16,7 @@ class ChatScreen:
             self.root = Toplevel(parent.root)
             self.root.geometry("580x550+850+300")
             self.root.protocol("WM_DELETE_WINDOW", self.save_to_file)
-
-
-            self.ph = placeholder.Placeholder()
+            
             
             self.chat_id = chats["chat_id"]
             self.messages = chats["messages"]
