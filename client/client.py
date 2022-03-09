@@ -46,24 +46,6 @@ class Client:
         print("Sending: "+request)
         self.client_socket.sendto(request.encode("utf-8"), (self.parent.SERVER_NAME, self.parent.SERVER_PORT))
 
-    def createHeader(self, flag, message, chat_id):
-
-        if flag == "LOGIN":
-            return flag + "`" + self.user_id
-
-        elif flag == "SEND":
-            return flag + "`" + self.user_id + chat_id + message
-            #would probably change recipientUser to the chatID
-
-        elif flag == "CHAT":
-            return flag + "`" + self.user_id + chat_id
-            # recipientUser would be a list of users for a groupchat
-
-        elif flag == "QUIT":
-            return flag + "`" + self.user_id
-
-        '''
-        # TODO implement protocol into header'''
 
     def send_message(self, message, chat_id):
         request = self.create_request("SEND", message = message, chat_id = chat_id)
@@ -83,6 +65,12 @@ class Client:
 
     def refresh_chats(self):
         pass
+
+    def log_out(self, ):
+        print("Logging off.") 
+        request = self.create_request("QUIT")
+        self.send_request(request)
+        self.stop()
 
     def get_messages(self, chat_id):
         request = self.create_request("HISTORY", chat_id = chat_id)
