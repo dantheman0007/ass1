@@ -84,6 +84,13 @@ class HomeScreen(object):
 
             entry.focus()
 
+        def error_window(self, err):
+            top= Toplevel(self.root)
+            top.geometry("300x75")
+            top.title("ERROR")
+
+            lbl = ttk.Label(top, text= err, wraplength=150)
+            lbl.pack(pady=5 )
 
         def close_win(self, top, entry):
             
