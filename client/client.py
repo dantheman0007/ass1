@@ -64,6 +64,8 @@ class Client:
         pass
 
     def refresh_chats(self):
+        request = self.create_request("CHATS")
+        self.send_request(request)
         pass
 
     def log_out(self):
@@ -95,6 +97,7 @@ class Client:
         if flag == "CHATS":
             self.parent.chats = json.loads(msg_content)
             print("Parent chats:",  self.parent.chats)
+            self.parent.hs.draw_gui()
 
         elif flag == "SEND":
             payload = json.loads(msg_content)
