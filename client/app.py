@@ -40,6 +40,7 @@ class ChatApp(object):
         
         self.client = client.Client(self)
         self.hs= home.HomeScreen(self)
+        self.hs.redraw_chat_frame()
 
     def fetch_messages(self, chat_id, *args):
         self.client.get_messages(chat_id)

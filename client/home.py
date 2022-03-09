@@ -95,6 +95,6 @@ class HomeScreen(object):
             
 
         def redraw_chat_frame(self, *args):
-            self.parent.load_chats()
+            self.parent.client.refresh_chats()
             self.chats_frame.grid_forget()
             self.draw_gui()
