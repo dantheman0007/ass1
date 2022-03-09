@@ -108,6 +108,8 @@ class ChatScreen:
             self.message_box.insert("end", 
                 message_dict["content"]+"\n\n", (justify_right, "regular_text",))
 
+            self.message_box.see("end")
+
 
         def write_messages(self):
 
