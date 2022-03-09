@@ -103,6 +103,14 @@ class Client:
             print("Parent chats:",  self.parent.chats)
             self.parent.hs.draw_gui()
 
+        elif flag == "CHAT":
+            payload = json.loads(msg_content)
+            err = payload["error"]
+            
+            if err != "":
+                self.parent.hs.error_window(err)
+            #print(err)
+
         elif flag == "SEND":
             payload = json.loads(msg_content)
             self.parent.chat_screens[payload["chat_id"]].write_message(payload)

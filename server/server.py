@@ -76,12 +76,13 @@ class Server:
         response = "`".join([header,chats_str])
         return response
 
-    def chat(self, message_content):
+    def chat(self, sender, message_content):
 
         message_dict = json.loads(message_content)
         receivers = message_dict["receivers"]
         canCreate = True
         notThere = ""
+        header = "`".join(["CHAT", sender])
         
         for receiver in receivers:
             temp = self.database.get_record_from_pk(models.User, receiver)
@@ -95,12 +96,18 @@ class Server:
             print("chat created")
             print(receivers)
             self.database.get_or_create_chat(receivers)
-            return (True, "")
+            final_dict = {"error": ''}
+            err_str = json.dumps(final_dict)
+            response = "`".join([header,err_str])
+            return (True, response)
         else:
             #WILL THIS DISPLAY SOMEWHERE??????
             # message is sent to the client if the user that they tried to create the chat with does not exist
             err = "User " + notThere + " does not exist. Chat cannot be created."
-            return(False, err)
+            final_dict = {"error": err}
+            err_str = json.dumps(final_dict)
+            response = "`".join([header,err_str])
+            return(False, response)
 
     def history(self, sender, message_content):
         message_dict = json.loads(message_content)
@@ -201,10 +208,10 @@ class Server:
                 self.serverSocket.sendto(response.encode('utf-8'), clientAddress)        
                 
             elif flag == "CHAT":
-                canCreate, response = self.chat(message_content)                
-                if not(canCreate):
+                canCreate, response = self.chat(sender, message_content)                
+                #if not(canCreate):
+                self.serverSocket.sendto(response.encode('utf-8'), clientAddress)
 
-                    self.serverSocket.sendto(response.encode(), clientAddress)
 
             elif flag == "HISTORY":
                 response = self.history(sender, message_content)
