@@ -19,7 +19,7 @@ class Client:
     def __init__(self, parent) -> None:
         self.parent = parent
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-
+        self._is_running= True
         host_name = socket.gethostname()
         client_ip = socket.gethostbyname(host_name)
 
@@ -28,6 +28,8 @@ class Client:
         listenMessage = threading.Thread(target=self.listenForMessage, )
         listenMessage.start()
         
+    def stop(self):
+        self._is_running = False
 
     def create_request(self, flag, **kwargs):
         header = "`".join([flag, self.parent.user_id])
@@ -90,10 +92,11 @@ class Client:
         self.send_request(request)
 
     def listenForMessage(self):
-        while True:
+        while (self._is_running):
             receivedMessage, serverAddress = self.client_socket.recvfrom(1000000)
             print(receivedMessage.decode())
             self.decode_message(receivedMessage.decode())
+        return
             
             
     def decode_message(self, response):
