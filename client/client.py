@@ -33,15 +33,21 @@ class Client:
             payload[key] = value
 
         payload_str = json.dumps(payload)
-
-        request = "`".join([header, payload_str])
-
+        hash_payload = self.myHash(payload_str)
+        print(hash_payload)
+        request = "`".join([header, payload_str,hash_payload])
         return request
 
     def send_request(self, request):
         print("Sending: "+request)
         self.client_socket.sendto(request.encode("utf-8"), (self.parent.SERVER_NAME, self.parent.SERVER_PORT))
-
+        
+        #receivedMessage, serverAddress = self.client_socket.recvfrom(1000000)
+        #if receivedMessage.decode('utf-8')=="ERROR":
+        #    print("server received wrong message...resending")
+        #    self.send_request(request)
+        #else: print("no error")
+        
 
     def send_message(self, message, chat_id):
         request = self.create_request("SEND", message = message, chat_id = chat_id)
@@ -85,7 +91,8 @@ class Client:
             
             
     def decode_message(self, response):
-
+        
+        print(response)
         response = response.split("`")
         flag = response[0]
         sender = response[1]
@@ -115,4 +122,4 @@ class Client:
         hash=0
         for ch in text:
             hash = ( hash*281  ^ ord(ch)*997) & 0xFFFFFFFF
-        return hash
+        return str(hash)

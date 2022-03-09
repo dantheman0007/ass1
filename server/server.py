@@ -2,6 +2,7 @@
 
 import socket
 import threading
+from typing_extensions import dataclass_transform
 import models
 import db
 import sqlalchemy
@@ -28,7 +29,7 @@ class Server:
         hash = 0
         for ch in text:
             hash = ( hash*281  ^ ord(ch)*997) & 0xFFFFFFFF
-        return hash
+        return str(hash)
 
     def sendMessage(self,flag, out_message):
         '''
@@ -159,9 +160,9 @@ class Server:
         flag = datagram_list[0]
         sender = datagram_list[1]
         msg_content= datagram_list[2]
-
+        hashed_message = datagram_list[3]
        
-        return(flag, sender, msg_content)
+        return(flag, sender, msg_content, hashed_message)
 
     def server(self):
         
@@ -174,8 +175,22 @@ class Server:
 
             message, clientAddress = self.serverSocket.recvfrom(2048)
             print(message)
-            flag, sender, message_content= self.decodeDatagram(message)
-            
+            flag, sender, message_content, hashed_message= self.decodeDatagram(message)
+
+            server_hash =self.myHash(message_content)
+
+            #if not(server_hash ==hashed_message):
+            #    flag = "ERROR" 
+
+
+            #if flag == "ERROR":
+            #    self.serverSocket.sendto("ERROR".encode('utf-8'),clientAddress)
+            #    print(f"server hash {server_hash }" )
+            #   print(f"client hash {hashed_message}")
+
+            #else:
+            #    self.serverSocket.sendto("MATCH".encode('utf-8'),clientAddress)
+
             if  flag == "LOGIN": 
                 self.login(sender, clientAddress)
                 response = self.chats(sender)
@@ -206,7 +221,7 @@ if __name__ == "__main__":
     server = Server()
 
             # just in case something in the refactoring is broken
-            '''
+'''
             if flag == "LOGIN": # add the user to the database
                 database.create_or_update(models.User, [{
                     "user_id": sender,
@@ -223,8 +238,7 @@ if __name__ == "__main__":
                 chats_str = json.dumps(chats)
                 response = "`".join([header,chats_str])
                 serverSocket.sendto(response.encode('utf-8'), clientAddress)
-            '''
-            '''
+            
             elif flag == "CHATS":
                 chats = database.get_user_chats(sender)
                 header = "`".join(["CHATS", sender])
@@ -232,9 +246,7 @@ if __name__ == "__main__":
                 chats_str = json.dumps(chats)
                 response = "`".join([header,chats_str])
                 serverSocket.sendto(response.encode('utf-8'), clientAddress)
-            '''
-            '''
-            elif flag == "CHAT": #creates a new chat with the specified users if one does not already exist
+                        elif flag == "CHAT": #creates a new chat with the specified users if one does not already exist
                 message_dict = json.loads(message_content)
                 receivers = message_dict["receivers"]
                 canCreate = True
@@ -257,9 +269,7 @@ if __name__ == "__main__":
                     # message is sent to the client if the user that they tried to create the chat with does not exist
                     err = "User " + notThere + " does not exist. Chat cannot be created."
                     serverSocket.sendto(err.encode(), clientAddress)
-                '''
-            '''
-            elif flag == "HISTORY":
+                          elif flag == "HISTORY":
                 message_dict = json.loads(message_content)
                 chat = message_dict["chat_id"]
                 header = "`".join(["HISTORY", sender])
@@ -279,9 +289,7 @@ if __name__ == "__main__":
                 msgs_str = json.dumps(final_dict)
                 response = "`".join([header,msgs_str])
                 serverSocket.sendto(response.encode('utf-8'), clientAddress)    
-            '''
-            '''
-            elif flag == "SEND": #sends a message to a chat using the chat_id
+                        elif flag == "SEND": #sends a message to a chat using the chat_id
                 print("sending message")
                 message_dict = json.loads(message_content)
 
@@ -289,9 +297,7 @@ if __name__ == "__main__":
                 chat_id = message_dict["chat_id"]
                 new_message = database.add_message(chat_id, msg, datetime.now(), sender)
                 sendMessage(flag, new_message)
-            '''
-            '''
-            elif flag == "QUIT": #changes the user's online status to false
+                      elif flag == "QUIT": #changes the user's online status to false
                 database.create_or_update(models.User, [{
                     "user_id": sender,
                     "online_status": False
@@ -303,4 +309,4 @@ if __name__ == "__main__":
 
                 response = "`".join([header, json.dumps(body)])
                 serverSocket.sendto(response.encode('utf-8'), clientAddress)    
-            '''
+'''
