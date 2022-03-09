@@ -26,17 +26,20 @@ class ChatApp(object):
 
         pass
 
-    def open_home(self, user_id):
+    def open_home(self, user_id, server_ip):
+
         config = configparser.ConfigParser()
         config.read(".config")
 
-        config["SESSION_INFO"]["server_ip"] = self.SERVER_NAME
+        config["SESSION_INFO"]["server_ip"] = server_ip
+        config["SESSION_INFO"]["user_id"] = user_id
 
         with open(".config", "w") as configfile:
             config.write(configfile)
 
 
         self.user_id = user_id
+        self.SERVER_NAME = server_ip
         
         self.client = client.Client(self)
         self.hs= home.HomeScreen(self)
@@ -63,7 +66,8 @@ class ChatApp(object):
             config = configparser.ConfigParser()
 
             config["SESSION_INFO"] = {
-                "server_ip": ""
+                "server_ip": "",
+                "user_id": ""
             }
 
             with open(".config", "w") as configfile:
@@ -74,6 +78,7 @@ class ChatApp(object):
         config.read(".config")
 
         self.SERVER_NAME = config["SESSION_INFO"]["server_ip"]
+        self.user_id = config["SESSION_INFO"]["user_id"]
 
 
 

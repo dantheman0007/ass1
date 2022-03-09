@@ -1,17 +1,13 @@
-# CLIENT
-# TODO: properly exit program, hash message 
 import socket
 import threading
-import sys
-import os
-import signal
-from os import path
 import json
 from tkinter import *
 
 
 class Client:
-
+    """
+    Client class that handles communication between the server and the GUI
+    """
 
     def __init__(self, parent) -> None:
         self.parent = parent
@@ -113,131 +109,9 @@ class Client:
 
         pass
 
-    def message_received(self, message):
-        # DO somethinf to print ot the screen
-        chat_id = "167831c0-be28-4689-b040-49048118956e"
-        payload = {"message_id": "abc",
-         "msg_content": message,
-          "timestamp": "",
-           "from_id": "MRRJUL007"
-           }
-        self.parent.chat_screens[chat_id].write_message(payload)
-        
-        pass
     
     def myHash(self, text):
         hash=0
         for ch in text:
             hash = ( hash*281  ^ ord(ch)*997) & 0xFFFFFFFF
         return hash
-'''
-serverName = "127.0.0.1"
-serverPort = 9999 
-clientSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-'''
-
-# #recipientUser= ""
-
-
-# # takes in input message from user
-# # should probably be corrected to createDatagram() after correct header implementation
-# def createHeader(flag, message, recipientUser):
-
-#     if flag == "LOGIN":
-#         return flag + "`" + username
-
-#     elif flag == "SEND":
-#         return flag + "`" + username + recipientUser + message
-#         #would probably change recipientUser to the chatID
-
-#     elif flag == "CHAT":
-#         return flag + "`" + username + recipientUser
-#         # recipientUser would be a list of users for a groupchat
-
-#     elif flag == "QUIT":
-#         return flag + "`" + username
-
-
-# '''
-# # runs in own thread
-# def listenForMessage():
-   
-#     while True:
-#         receivedMessage, serverAddress = clientSocket.recvfrom(2048)
-#         #print(f"{recipientUser} > {receivedMessage.decode('utf-8')}")
-#         print(receivedMessage.decode())
-#    '''     
-# # runs in second thread
-# def listenForInput(): # from user keyboard
-
-#     #recipientUser= input(f"Who would you like to talk to? \n{username}> ")
-#     inChat= True
-    
-#     while inChat:
-#         print("Enter one of the following keywords:")
-#         print("CHAT - to start a chat")
-#         print("SEND - to send a message")
-#         print("QUIT - to logout")
-#         usrmessage= input(f"{username} > ")
-#         #recipientUser= input(f"Who would you like to talk to? \n{username}> ")
-
-#         if usrmessage == "QUIT": # user disconnecting
-#             clientSocket.sendto(createHeader("QUIT", "", "").encode('utf-8'),(serverName,serverPort))
-#             #change online to false
-#             print("Signing out...")
-#             #clientSocket.close()
-#             quit()
-#             #inChat=False
-            
-#             #return
-#             # TODO properly exit program (can do it when gui done?)
-#             # try:
-#             #    os.kill(os.getpid(), signal.SIGINT)
-#             # need to close client socket
-#             # except:
-                
-
-              
-        #elif usrmessage == "CHAT":
-        #    users = input("Enter list of users separated by a space: ")
-         #   message = createHeader("CHAT","", users)
-          #  clientSocket.sendto(message.encode('utf-8'),(serverName,serverPort))
-          
-          
-#         elif usrmessage== "get": # not used at the moment, need to wait for how protocol is done
-#             try:
-#                 receivedMessage, serverAddress = clientSocket.recvfrom(2048)
-#                 print(receivedMessage.decode('utf-8'))
-#             except:
-#                 print("timed out")
-        
-#         elif usrmessage == "CHAT":
-#             users = input("Enter list of users separated by a space: ")
-#             message = createHeader("CHAT","", users)
-#             clientSocket.sendto(message.encode('utf-8'),(serverName,serverPort))
-        
-#         elif usrmessage == "SEND": # send message to server
-#             recipientUser= input(f"Who would you like to talk to? \n{username}> ")
-#             usrmessage = input(f"Input message to send to {recipientUser}: ")
-#             message = createHeader("SEND",usrmessage, recipientUser)
-            
-            
-#             clientSocket.sendto(message.encode('utf-8'),(serverName,serverPort))
-#     return
-
-
-# def main():
-
-#     initialMessage= createHeader("LOGIN", "", "").encode('utf-8') # login in, will add the user to the database if not already in
-#         # TODO get feedback from server if recipient is  valid
-
-#     clientSocket.sendto(initialMessage, (serverName, serverPort))
-#     receivedMessage, serverAddress = clientSocket.recvfrom(2048)
-#     print(receivedMessage.decode())
-#     listenMessage = threading.Thread(target=listenForMessage, )
-#     listenMessage.start()
-    
-
-
-if __name__ == "__main__":
-    pass

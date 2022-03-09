@@ -9,12 +9,15 @@ class LoginScreen(object):
         self.parent = parent
 
         self.root = Toplevel(parent.root)
+        self.root.protocol("WM_DELETE_WINDOW", self.close)
 
         self.root.title("Login")
         self.root.geometry("550x400+300+300")
 
         self.create_gui()
         
+    def close(self):
+        self.parent.root.destroy()
 
     def create_gui(self):
         self.root.grid_rowconfigure(0, weight = 1)
@@ -32,7 +35,7 @@ class LoginScreen(object):
         id_entry = ttk.Entry(mainframe, width= 20, textvariable=self.user_id)
 
         ## Used for testing purposes
-        id_entry.insert(0, "LJNDAN001")
+        id_entry.insert(0, self.parent.user_id)
 
         id_entry.grid(column=2, row= 1, sticky=(W, E))
 
@@ -61,8 +64,7 @@ class LoginScreen(object):
         uid = self.user_id.get()
 
         if self.validate_uid(uid):
-            self.parent.SERVER_NAME = self.ip_entry.get()
-            self.parent.open_home(uid)
+            self.parent.open_home(uid, self.ip_entry.get())
             self.root.destroy()
         else:
             messagebox.showerror(self.root, "Please enter a valid student number")
