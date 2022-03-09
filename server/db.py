@@ -159,8 +159,7 @@ class DB():
 
         for row in results:
             chat_ids.append({
-                "chat_id": row.Chat.chat_id,
-                "chat_name": row.Chat.chat_name
+                "chat_id": row.Chat.chat_id
             })
 
         return chat_ids
@@ -188,7 +187,7 @@ class DB():
 
         if chat is None:
             print("Chat doesn't exist, creating...")
-            chat = models.Chat( chat_id = new_chat_id, chat_name = "") 
+            chat = models.Chat( chat_id = new_chat_id) 
             self.session.add(chat)
 
             print("Adding users...")

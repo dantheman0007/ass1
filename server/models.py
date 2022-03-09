@@ -50,7 +50,6 @@ class Chat(Base):
     '''Class that represents a Chat table with an id and name.'''
     __tablename__ = "chat"
     chat_id = Column(String, primary_key=True)
-    chat_name = Column(String)
 
     users  = relationship("User", secondary=user_chat, back_populates="chats")
     messages = relationship("Message")
