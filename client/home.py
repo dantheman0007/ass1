@@ -71,7 +71,7 @@ class HomeScreen(object):
         def new_chat_window(self, *args):
             top= Toplevel(self.root)
             top.geometry("350x150+300+300")
-            top.title("NEW MESSAGE")
+            top.title("NEW CHAT")
 
             lbl = ttk.Label(top, text="Enter the list of users you want to talk to, separated by a space:", wraplength=150)
             lbl.pack(pady=5 )
