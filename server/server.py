@@ -1,5 +1,3 @@
-# SERVER
-
 import socket
 import threading
 from typing_extensions import dataclass_transform
@@ -10,8 +8,15 @@ from datetime import datetime
 import json
 
 class Server:
-
+    """
+    server used for backend of chat application
+    processes all clients and messages
+    stores data in a database
+    """
     def __init__(self):
+        """
+        initialises server socket and database
+        """
         self.serverPort = 9999 
         self.serverSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # initialising server object
         self.serverSocket.bind(("",self.serverPort)) # bind to local host
@@ -21,10 +26,14 @@ class Server:
 
     def myHash(self, text):
         '''
-        Hash function that performs a hash on the input string.
+        simple hash function to hash the message of our datagram
+        used to ensure correct message was received
 
         Parameters:
-        text (str): the text that the hash function must be performed on.
+            text: string to be hashed
+
+        Returns:
+            hash value associated with string
         '''
         hash = 0
         for ch in text:
@@ -59,6 +68,13 @@ class Server:
 
 
     def login(self, sender,clientAddress):
+        """
+        Creates a new user in database or updates the users IP in database if the user exists
+
+        Parameters:
+            sender: student ID of the user who logged in
+            clientAddress: IP and Port number of the user who logged in
+        """
         self.database.create_or_update(models.User, [{
             "user_id": sender,
             "ip_address": clientAddress[0], # if user is already in database, will just update IP address
@@ -67,8 +83,13 @@ class Server:
         }], "user_id")
         print(sender + " has logged in.")
         
-    #fetches all of the chats that the user is a part of
     def chats(self, sender):
+        """
+        Fetches all of the chats that the user is a part of
+
+        Parameters:
+            sender: student ID of the user whose chats are to be retrieved from database
+        """
         chats = self.database.get_user_chats(sender)
         header = "`".join(["CHATS", sender])
         
@@ -77,7 +98,13 @@ class Server:
         return response
 
     def chat(self, sender, message_content):
+        """
+        Creates chat in database if the specified users exits
 
+        Parameters:
+            sender: student ID of the user requestng a new chat
+            message_content: all the data in the message of the datagram in JSON format
+        """
         message_dict = json.loads(message_content)
         receivers = message_dict["receivers"]
         canCreate = True
@@ -109,6 +136,13 @@ class Server:
             return(False, response)
 
     def history(self, sender, message_content):
+        """
+        Returns all the chat histor of a user
+    
+        Parameters:
+            sender: student ID of the user requestng chat history 
+            message_content: all the data in the message of the datagram in JSON format
+        """
         message_dict = json.loads(message_content)
         chat = message_dict["chat_id"]
         header = "`".join(["HISTORY", sender])
@@ -130,6 +164,13 @@ class Server:
         return response
 
     def send(self, sender, message_content):
+        """
+        adds incoming message to database before sending it to recipient
+
+        Parameters:
+            sender: student ID of the user requestng to send message 
+            message_content: all the data in the message of the datagram in JSON format
+        """
         print("sending message")
         message_dict = json.loads(message_content)
 
@@ -139,6 +180,12 @@ class Server:
         self.sendMessage("SEND", new_message)
 
     def quit(self, sender):
+        """
+        Updates database that user has logged off
+
+        Parameters:
+            sender: student ID of the studet logging off
+        """
         self.database.create_or_update(models.User, [{
             "user_id": sender,
             "online_status": False
@@ -152,6 +199,14 @@ class Server:
         return response
 
     def user_online(self,message_content,sender):
+        """
+        Returns whether the user is online
+        Used to determine whether the incoming message is received by the recipient or not
+
+        Parameters:
+            sender: student ID of the user requestng to send a message 
+            message_content: all the data in the message of the datagram in JSON format
+        """
         message_dict = json.loads(message_content)
         chat_id=message_dict["chat_id"]
         users= chat_id.split("-")
@@ -166,13 +221,12 @@ class Server:
 
            
     def decodeDatagram(self, datagram):
-
-        '''
+        """
         Method to decode the datagram into the flag, sender and message content.
         
         Parameters:
             datagram: the datagram that contains the header and message content (if necessary)
-        '''
+        """
         
         datagram = datagram.decode('utf-8')
         datagram_list= datagram.split("`")
@@ -185,11 +239,10 @@ class Server:
 
 
     def server(self):
-
-        
-        '''
+        """
         method that listens for input from clients and responds to the messages in different ways, depending on the flags.
-        '''
+        deals with messages according to the protocol
+        """
         print("The server is running...")
         
         while True:
@@ -223,7 +276,6 @@ class Server:
                     self.serverSocket.sendto(response.encode('utf-8'),clientAddress)
                     self.send(sender, message_content) 
 
-
             elif  flag == "LOGIN": 
                 self.login(sender, clientAddress)
                 response = self.chats(sender)
@@ -235,14 +287,11 @@ class Server:
                 
             elif flag == "CHAT":
                 canCreate, response = self.chat(sender, message_content)                
-                #if not(canCreate):
                 self.serverSocket.sendto(response.encode('utf-8'), clientAddress)
-
 
             elif flag == "HISTORY":
                 response = self.history(sender, message_content)
                 self.serverSocket.sendto(response.encode('utf-8'), clientAddress)    
-
 
             elif flag == "QUIT": #changes the user's online status to false
                 response = self.quit(sender)
