@@ -1,8 +1,6 @@
 from tkinter import *
 from tkinter import ttk
-from functools import partial
 from datetime import datetime
-import json
 
 
 class ChatScreen:
