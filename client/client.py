@@ -206,7 +206,10 @@ class Client:
 
         elif flag == "SEND":
             payload = json.loads(msg_content)
-            self.parent.chat_screens[payload["chat_id"]].write_message(payload)
+            if payload["chat_id"] in self.parent.chat_screens:
+                self.parent.chat_screens[payload["chat_id"]].write_message(payload)
+            else:
+                print("New message received from {}".format(payload["from_id"]))
         
         elif flag == "HISTORY":
             payload = json.loads(msg_content)

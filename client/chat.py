@@ -14,7 +14,7 @@ class ChatScreen:
             self.parent = parent
             self.root = Toplevel(parent.root)
             self.root.geometry("580x550+850+300")
-            self.root.protocol("WM_DELETE_WINDOW", self.save_to_file)
+            self.root.protocol("WM_DELETE_WINDOW", self.close_chat_window)
             self.online=False 
             self.chat_id = chats["chat_id"]
             self.messages = chats["messages"]
@@ -86,7 +86,8 @@ class ChatScreen:
             pass
 
 
-        def save_to_file(self):
+        def close_chat_window(self):
+            del self.parent.chat_screens[self.chat_id]
             self.root.destroy()
 
         def online_status(self, isOnline):

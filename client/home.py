@@ -34,6 +34,7 @@ class HomeScreen(object):
             self.chats_frame.grid(row=2, column=0, padx=200)
 
             frames = []
+            self.labels = dict()
 
             ttk.Label(self.mainframe, text = "Chats for {}".format(self.parent.user_id)).grid(row=1, column = 0)
 
@@ -58,10 +59,13 @@ class HomeScreen(object):
 
                 
                 l = ttk.Label(f, text = cid)
+                
                 l.grid(row = i, column =0,sticky=W)
 
                 f.bind("<Button-1>", partial(self.parent.fetch_messages, chat["chat_id"]))
                 l.bind("<Button-1>", partial(self.parent.fetch_messages, chat["chat_id"]))
+
+                self.labels[chat["chat_id"]] = l
     
                 frames.append(f)
 
@@ -93,6 +97,9 @@ class HomeScreen(object):
 
             lbl = ttk.Label(top, text= err, wraplength=150)
             lbl.pack(pady=5 )
+
+        def update_unreads(self, chat_id):
+            print(self.labels[chat_id].cget("text"))
 
         def close_win(self, top, entry):
             
