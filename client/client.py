@@ -63,10 +63,7 @@ class Client:
         if not(self.ack):
             self.send_message(message, chat_id)
 
-        else:
-            print(u'\u2713')
-        
-        #self.send_request(request)
+        pass 
 
     def login(self):
         request = self.create_request("LOGIN")
@@ -113,13 +110,24 @@ class Client:
 
         if flag =="ACK":
             payload = json.loads(msg_content)
-            err = payload["error"]
+            message = payload["message"]
             
-            if err == "":
+            if message== "online":
                 self.ack= True
+                # tell chat.py that user is online, 
+                # chat.py has online var and online_status()
+                # should print 2 ticks under message
+                # user online
+            elif message=="offline":
+                self.ack=True
+                # user offline
+                # tell chat.py that user is offline, 
+                # chat.py has online var and online_status()
+                # should print 1 ticks under message
+
             else:
                 self.ack = False
-                print(err)
+                print(message)
                 print("server received wrong message...resending")
 
             self.waiting_for_ack = False 

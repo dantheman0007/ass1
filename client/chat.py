@@ -15,8 +15,7 @@ class ChatScreen:
             self.root = Toplevel(parent.root)
             self.root.geometry("580x550+850+300")
             self.root.protocol("WM_DELETE_WINDOW", self.save_to_file)
-            
-            
+            self.online=False 
             self.chat_id = chats["chat_id"]
             self.messages = chats["messages"]
             
@@ -90,6 +89,8 @@ class ChatScreen:
         def save_to_file(self):
             self.root.destroy()
 
+        def online_status(self, isOnline):
+            self.online = isOnline
 
         def write_message(self, message_dict):
             if self.parent.user_id == message_dict["from_id"]:
@@ -106,10 +107,16 @@ class ChatScreen:
                 ("muted", justify_right))
 
             self.message_box.insert("end", 
-                message_dict["content"]+"\n\n", (justify_right, "regular_text",))
+                message_dict["content"]+"\n", (justify_right, "regular_text",))
 
+            if (self.online): # if the receiver is online, print 2 ticks
+                self.message_box.insert("end",u'\u2713'+u'\u2713'+"\n\n",(justify_right,"regular_text"))
+
+            else: # if the receiver is offline, print 1 tick
+                self.message_box.insert("end",u'\u2713'+"\n\n",(justify_right,"regular_text"))
+            
             self.message_box.see("end")
-
+        
 
         def write_messages(self):
 

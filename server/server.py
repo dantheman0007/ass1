@@ -150,7 +150,20 @@ class Server:
 
         response = "`".join([header, json.dumps(body)])
         return response
-       
+
+    def user_online(self,message_content,sender):
+        message_dict = json.loads(message_content)
+        chat_id=message_dict["chat_id"]
+        users= chat_id.split("-")
+        print(f"users {users}")
+        online = False
+    
+        for user in users:
+            if(user!=sender):
+                record=self.database.get_record_from_pk(models.User,user)
+                online=record.online_status
+        return online
+
            
     def decodeDatagram(self, datagram):
 
@@ -170,7 +183,9 @@ class Server:
        
         return(flag, sender, msg_content, hashed_message)
 
+
     def server(self):
+
         
         '''
         method that listens for input from clients and responds to the messages in different ways, depending on the flags.
@@ -191,14 +206,18 @@ class Server:
 
                 if (error):
                     header = "`".join(["ACK",sender])
-                    final_dict = {"error": "the message was wrong"}
+                    final_dict = {"message": "the message sent was wrong"}
                     err_str = json.dumps(final_dict)
                     response = "`".join([header,err_str])
                     self.serverSocket.sendto(response.encode('utf-8'),clientAddress)
 
                 else:
                     header = "`".join(["ACK",sender])
-                    final_dict = {"error": ""}
+                    if(self.user_online(message_content,sender)):
+                        final_dict = {"message": "online"}
+                    else:
+                        final_dict= {"message":"offline"}
+
                     err_str = json.dumps(final_dict)
                     response = "`".join([header,err_str])
                     self.serverSocket.sendto(response.encode('utf-8'),clientAddress)
