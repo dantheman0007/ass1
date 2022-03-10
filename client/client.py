@@ -3,7 +3,6 @@ import threading
 import json
 from tkinter import *
 
-# print (u'\u2713') TICK SYMBOL
 class Client:
     """
     Client class that handles communication between the server and the GUI
@@ -63,7 +62,6 @@ class Client:
         Parameters:
             request: datagram to be sent to server, in format that follows protocol
         """
-        print("Sending: "+request)
         self.client_socket.sendto(request.encode("utf-8"), (self.parent.SERVER_NAME, self.parent.SERVER_PORT))
         
         
@@ -80,7 +78,6 @@ class Client:
         request = self.create_request("SEND", message = message, chat_id = chat_id)
 
         self.client_socket.sendto(request.encode("utf-8"), (self.parent.SERVER_NAME, self.parent.SERVER_PORT))
-        print("Sending message: " + request)
         self.waiting_for_ack= True
 
         while(self.waiting_for_ack):
@@ -150,7 +147,6 @@ class Client:
         """
         while (self._is_running):
             receivedMessage, serverAddress = self.client_socket.recvfrom(1000000)
-            print("listenForMessage "+receivedMessage.decode())
             self.decode_message(receivedMessage.decode())
             
         return
@@ -192,14 +188,12 @@ class Client:
 
             else:
                 self.ack = False
-                print(message)
                 print("server received wrong message...resending")
 
             self.waiting_for_ack = False 
             
         elif flag == "CHATS":
             self.parent.chats = json.loads(msg_content)
-            print("Parent chats:",  self.parent.chats)
             self.parent.hs.draw_gui()
 
         elif flag == "CHAT":

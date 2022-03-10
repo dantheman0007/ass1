@@ -87,7 +87,7 @@ class HomeScreen(object):
         """
         top= Toplevel(self.root)
         top.geometry("350x150+300+300")
-        top.title("NEW MESSAGE")
+        top.title("NEW CHAT")
 
         lbl = ttk.Label(top, text="Enter the list of users you want to talk to, separated by a space:", wraplength=150)
         lbl.pack(pady=5 )
@@ -143,7 +143,7 @@ class HomeScreen(object):
 
     def redraw_chat_frame(self, *args):
         """
-        Refrshes the chat list from the database and redraws the GUI
+        Refreshes the chat list from the database and redraws the GUI
         """
         self.parent.client.refresh_chats()
         self.chats_frame.grid_forget()

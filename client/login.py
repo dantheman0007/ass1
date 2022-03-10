@@ -32,19 +32,15 @@ class LoginScreen(object):
         """
         self.root.grid_rowconfigure(0, weight = 1)
         self.root.grid_columnconfigure(0, weight = 1)
-        # win = Tk()
-        # win.geometry("500x500")
         mainframe = ttk.Frame(self.root, padding="3 3 12 12")
         mainframe.grid(column=0, row=0, sticky=(N, W, E, S))
         
         self.root.columnconfigure(0, weight=1)
         self.root.rowconfigure(0, weight=1)
         
-        # mainframe.pack()
         self.user_id = StringVar()
         id_entry = ttk.Entry(mainframe, width= 20, textvariable=self.user_id)
 
-        ## Used for testing purposes
         id_entry.insert(0, self.parent.user_id)
 
         id_entry.grid(column=2, row= 1, sticky=(W, E))

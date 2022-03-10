@@ -47,7 +47,7 @@ class Message(Base):
         return self.content
 
 class Chat(Base):
-    '''Class that represents a Chat table with an id and name.'''
+    '''Class that represents a Chat table with an id.'''
     __tablename__ = "chat"
     chat_id = Column(String, primary_key=True)
 

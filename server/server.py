@@ -117,8 +117,6 @@ class Server:
                 break
 
         if canCreate == True:
-            print("chat created")
-            print(receivers)
             self.database.get_or_create_chat(receivers)
             final_dict = {"error": ''}
             err_str = json.dumps(final_dict)
@@ -168,7 +166,6 @@ class Server:
             sender: student ID of the user requestng to send message 
             message_content: all the data in the message of the datagram in JSON format
         """
-        print("sending message")
         message_dict = json.loads(message_content)
 
         msg = message_dict["message"]
@@ -207,7 +204,6 @@ class Server:
         message_dict = json.loads(message_content)
         chat_id=message_dict["chat_id"]
         users= chat_id.split("-")
-        print(f"users {users}")
         online = False
     
         for user in users:
@@ -245,7 +241,6 @@ class Server:
         while True:
 
             message, clientAddress = self.serverSocket.recvfrom(2048)
-            print(message)
             flag, sender, message_content, hashed_message= self.decodeDatagram(message)
 
             if flag == "SEND": #sends a message to a chat using the chat_id
