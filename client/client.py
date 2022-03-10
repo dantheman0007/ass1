@@ -13,6 +13,8 @@ class Client:
         self.parent = parent
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self._is_running= True
+        self.waiting_for_ack= True 
+        self.ack= True
         host_name = socket.gethostname()
         client_ip = socket.gethostbyname(host_name)
 
@@ -34,7 +36,6 @@ class Client:
 
         payload_str = json.dumps(payload)
         hash_payload = self.myHash(payload_str)
-        print(hash_payload)
         request = "`".join([header, payload_str,hash_payload])
         return request
 
@@ -52,8 +53,20 @@ class Client:
     def send_message(self, message, chat_id):
         request = self.create_request("SEND", message = message, chat_id = chat_id)
 
+        self.client_socket.sendto(request.encode("utf-8"), (self.parent.SERVER_NAME, self.parent.SERVER_PORT))
         print("Sending message: " + request)
-        self.send_request(request)
+        self.waiting_for_ack= True
+
+        while(self.waiting_for_ack):
+            continue
+
+        if not(self.ack):
+            self.send_message(message, chat_id)
+
+        else:
+            print(u'\u2713')
+        
+        #self.send_request(request)
 
     def login(self):
         request = self.create_request("LOGIN")
@@ -84,7 +97,7 @@ class Client:
     def listenForMessage(self):
         while (self._is_running):
             receivedMessage, serverAddress = self.client_socket.recvfrom(1000000)
-            print(receivedMessage.decode())
+            print("listenForMessage "+receivedMessage.decode())
             self.decode_message(receivedMessage.decode())
             
         return
@@ -92,13 +105,26 @@ class Client:
             
     def decode_message(self, response):
         
-        print(response)
+        print("Reponse"+response)
         response = response.split("`")
         flag = response[0]
         sender = response[1]
         msg_content= response[2]
 
-        if flag == "CHATS":
+        if flag =="ACK":
+            payload = json.loads(msg_content)
+            err = payload["error"]
+            
+            if err == "":
+                self.ack= True
+            else:
+                self.ack = False
+                print(err)
+                print("server received wrong message...resending")
+
+            self.waiting_for_ack = False 
+            
+        elif flag == "CHATS":
             self.parent.chats = json.loads(msg_content)
             print("Parent chats:",  self.parent.chats)
             self.parent.hs.draw_gui()

@@ -70,7 +70,8 @@ class HomeScreen(object):
 
         def new_chat_window(self, *args):
             top= Toplevel(self.root)
-            top.geometry("350x150")
+            top.geometry("350x150+300+300")
+            top.title("NEW MESSAGE")
 
             lbl = ttk.Label(top, text="Enter the list of users you want to talk to, separated by a space:", wraplength=150)
             lbl.pack(pady=5 )
@@ -86,7 +87,8 @@ class HomeScreen(object):
 
         def error_window(self, err):
             top= Toplevel(self.root)
-            top.geometry("300x75")
+            top.geometry("350x150+300+300")
+            # set location
             top.title("ERROR")
 
             lbl = ttk.Label(top, text= err, wraplength=150)
