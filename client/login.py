@@ -3,6 +3,9 @@ from tkinter import messagebox
 from tkinter import ttk
 
 class LoginScreen(object):
+    """
+    Login GUI and associated methods
+    """
 
     def __init__(self, parent):
         self.parent = parent
@@ -14,11 +17,19 @@ class LoginScreen(object):
         self.root.geometry("550x400+300+300")
 
         self.create_gui()
-        
+
+
     def close(self):
+        """
+        Closes the whole app (otherwise it continues running in the background)
+        """
         self.parent.root.destroy()
 
+
     def create_gui(self):
+        """
+        Creates, sets up and displays the GUI
+        """
         self.root.grid_rowconfigure(0, weight = 1)
         self.root.grid_columnconfigure(0, weight = 1)
         # win = Tk()
@@ -60,6 +71,9 @@ class LoginScreen(object):
 
 
     def login(self, *args):
+        """
+        Logs the user in by ensuring a valid user_id was entered and then sending a request to the database
+        """
         uid = self.user_id.get()
 
         if self.validate_uid(uid):
@@ -70,12 +84,33 @@ class LoginScreen(object):
 
 
     def has_numbers(self, input):
+        """
+        Utility function to deteremine if a string contains numbers
+
+        Paramters:
+            input (string): The input string to check for numbers
+        """
         return any(char.isdigit() for char in input)
 
+
     def has_letters(self, input):
+        """
+        Utility function to deteremine if a string contains characters that aren't numbers
+
+        Paramters:
+            input (string): The input string to check for characters
+        """
+
         return any(c.isalpha() for c in input)
 
+
     def validate_uid(self, uid):
+        """
+        Validates a user_id based on if the first 9 characters are fully alphabetical and the last three characters are fully numerical
+
+        Paramters:
+            uid (string): The user ID to validate
+        """
 
         if len(uid) != 9:
             return False
