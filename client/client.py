@@ -173,12 +173,17 @@ class Client:
             message = payload["message"]
             
             if message== "online":
+                self.parent.chat_screens[payload["chat_id"]].online_status(True)
+                
                 self.ack= True
                 # tell chat.py that user is online, 
                 # chat.py has online var and online_status()
                 # should print 2 ticks under message
                 # user online
+
+                
             elif message=="offline":
+                self.parent.chat_screens[payload["chat_id"]].online_status(False)
                 self.ack=True
                 # user offline
                 # tell chat.py that user is offline, 

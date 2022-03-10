@@ -134,11 +134,12 @@ class ChatScreen:
         self.message_box.insert("end", 
             message_dict["content"]+"\n", (justify_right, "regular_text",))
 
-        if (self.online): # if the receiver is online, print 2 ticks
-            self.message_box.insert("end",u'\u2713'+u'\u2713'+"\n\n",(justify_right,"regular_text"))
+        if self.parent.user_id == message_dict["from_id"]:
+            if (self.online): # if the receiver is online, print 2 ticks
+                self.message_box.insert("end",u'\u2713'+u'\u2713'+"\n\n",(justify_right,"regular_text"))
 
-        else: # if the receiver is offline, print 1 tick
-            self.message_box.insert("end",u'\u2713'+"\n\n",(justify_right,"regular_text"))
+            else: # if the receiver is offline, print 1 tick
+                self.message_box.insert("end",u'\u2713'+"\n\n",(justify_right,"regular_text"))
         
         self.message_box.see("end")
     
@@ -148,7 +149,9 @@ class ChatScreen:
         Writes the message history to the chat screen
         """
 
+        self.online = True
         for i, message in enumerate(self.messages):
-
             self.write_message(message)
+
+        self.online = False
 
