@@ -51,7 +51,10 @@ class ChatApp(object):
         
 
     def open_chat_screen(self, chats):
-        self.chat_screens[chats["chat_id"]] = chat.ChatScreen(self, chats)
+        self.chat_screens[chats["chat_id"]] = {
+            "chat_screen": chat.ChatScreen(self, chats),
+            "open": True
+        }
 
     def start_new_chat(self, user_ids):
         print(user_ids)

@@ -2,7 +2,6 @@
 
 import socket
 import threading
-from typing_extensions import dataclass_transform
 import models
 import db
 import sqlalchemy
@@ -218,6 +217,7 @@ class Server:
                     else:
                         final_dict= {"message":"offline"}
 
+                    final_dict["chat_id"] = json.loads(message_content)["chat_id"]
                     err_str = json.dumps(final_dict)
                     response = "`".join([header,err_str])
                     self.serverSocket.sendto(response.encode('utf-8'),clientAddress)

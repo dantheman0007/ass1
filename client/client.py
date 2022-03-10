@@ -118,19 +118,24 @@ class Client:
                 # chat.py has online var and online_status()
                 # should print 2 ticks under message
                 # user online
+                self.parent.chat_screens[payload["chat_id"]]["chat_screen"].print_tick(self.ack)
+                
             elif message=="offline":
                 self.ack=True
                 # user offline
                 # tell chat.py that user is offline, 
                 # chat.py has online var and online_status()
                 # should print 1 ticks under message
+                self.parent.chat_screens[payload["chat_id"]]["chat_screen"].print_tick(self.ack)
 
             else:
                 self.ack = False
                 print(message)
                 print("server received wrong message...resending")
 
+        
             self.waiting_for_ack = False 
+            
             
         elif flag == "CHATS":
             self.parent.chats = json.loads(msg_content)
@@ -147,7 +152,7 @@ class Client:
 
         elif flag == "SEND":
             payload = json.loads(msg_content)
-            self.parent.chat_screens[payload["chat_id"]].write_message(payload)
+            self.parent.chat_screens[payload["chat_id"]]["chat_screen"].write_message(payload)
         
         elif flag == "HISTORY":
             payload = json.loads(msg_content)

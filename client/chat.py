@@ -109,14 +109,17 @@ class ChatScreen:
             self.message_box.insert("end", 
                 message_dict["content"]+"\n", (justify_right, "regular_text",))
 
-            if (self.online): # if the receiver is online, print 2 ticks
-                self.message_box.insert("end",u'\u2713'+u'\u2713'+"\n\n",(justify_right,"regular_text"))
-
-            else: # if the receiver is offline, print 1 tick
-                self.message_box.insert("end",u'\u2713'+"\n\n",(justify_right,"regular_text"))
+            
             
             self.message_box.see("end")
         
+        def print_tick(self, online):
+            if (online): # if the receiver is online, print 2 ticks
+                self.message_box.insert("end",u'\u2713'+u'\u2713'+"\n\n",("just_right","regular_text"))
+
+            else: # if the receiver is offline, print 1 tick
+                self.message_box.insert("end",u'\u2713'+"\n\n",("just_right","regular_text"))
+
 
         def write_messages(self):
 
