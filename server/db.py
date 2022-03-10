@@ -181,7 +181,6 @@ class DB():
         """
 
         new_chat_id = "-".join(sorted(user_ids))
-        #print(new_chat_id)
 
         chat = self.get_record_from_pk(models.Chat, new_chat_id)
 

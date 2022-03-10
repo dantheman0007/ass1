@@ -2,7 +2,7 @@
 Helper file for various database tasks, like creating and loading data.
 
 Accepted command-line arguments:
-    create_new_db
+    create_db
     add_users
     add_chats
     add_messages
