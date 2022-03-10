@@ -3,7 +3,6 @@ import threading
 import json
 from tkinter import *
 
-# print (u'\u2713') TICK SYMBOL
 class Client:
     """
     Client class that handles communication between the server and the GUI
@@ -22,6 +21,7 @@ class Client:
         self._is_running= True
         self.waiting_for_ack= True 
         self.ack= True
+        self.count=1
         host_name = socket.gethostname()
         client_ip = socket.gethostbyname(host_name)
 
@@ -56,6 +56,27 @@ class Client:
         request = "`".join([header, payload_str,hash_payload])
         return request
 
+    def create_fake_request(self, flag, **kwargs):
+        """
+        takes in a protocol flag and creates a request for server
+        request format: FLAG`SENDER`MESSAGE_PAYLOAD
+
+        Parameters:
+            flag: keyword that informs server what process to carry out 
+        """
+        header = "`".join([flag, self.parent.user_id])
+        
+        payload = {}
+
+        for key, value in kwargs.items():
+            payload[key] = value
+
+        payload_str = json.dumps(payload)
+        hash_payload = str(hash(payload_str))
+        print("Fake hash sent to server: "+hash_payload)
+        request = "`".join([header, payload_str,hash_payload])
+        return request
+
     def send_request(self, request):
         """
         Sends request to server
@@ -63,7 +84,6 @@ class Client:
         Parameters:
             request: datagram to be sent to server, in format that follows protocol
         """
-        print("Sending: "+request)
         self.client_socket.sendto(request.encode("utf-8"), (self.parent.SERVER_NAME, self.parent.SERVER_PORT))
         
         
@@ -74,13 +94,17 @@ class Client:
         Waits for ACK from server before advancing
 
         Parameters:
-            message: outgoing message to server -> client_ip
+            message: outgoing message to server and then receiver user
             chat_id: unique ID associated with a chat
         """
-        request = self.create_request("SEND", message = message, chat_id = chat_id)
+        print("Message from user: "+message)
+        if (message=="stresstest" and self.count==1):
+            request=self.create_fake_request("SEND", message = message, chat_id = chat_id)
+            print("Sending corrupted message to server.")
+        else:
+            request = self.create_request("SEND", message = message, chat_id = chat_id)
 
         self.client_socket.sendto(request.encode("utf-8"), (self.parent.SERVER_NAME, self.parent.SERVER_PORT))
-        print("Sending message: " + request)
         self.waiting_for_ack= True
 
         while(self.waiting_for_ack):
@@ -88,6 +112,7 @@ class Client:
             # wait for server to return an ACK
 
         if not(self.ack):
+            self.count=2
             self.send_message(message, chat_id)
             # if server returns NACK, resend message
 
@@ -109,7 +134,6 @@ class Client:
         Parameters:
             users: list of all users needed for new chat
         """
-        print("Making new chat with: ", users)
         request = self.create_request("CHAT", receivers = users)
         self.send_request(request)
         self.parent.hs.draw_gui()
@@ -128,7 +152,6 @@ class Client:
         informs server that user is Logging
         ends the thread listening for incoming messages
         """
-        print("Logging off.") 
         request = self.create_request("QUIT")
         self.send_request(request)
         self.stop()
@@ -150,7 +173,6 @@ class Client:
         """
         while (self._is_running):
             receivedMessage, serverAddress = self.client_socket.recvfrom(1000000)
-            print("listenForMessage "+receivedMessage.decode())
             self.decode_message(receivedMessage.decode())
             
         return
@@ -180,6 +202,7 @@ class Client:
                 # user online
             elif message=="offline":
                 self.ack=True
+                print("Server acknowledged message was correct")
                 # user offline
                 # tell chat.py that user is offline, 
                 # chat.py has online var and online_status()
@@ -188,13 +211,12 @@ class Client:
             else:
                 self.ack = False
                 print(message)
-                print("server received wrong message...resending")
+                print("Server received wrong message that did not match hash...resending")
 
             self.waiting_for_ack = False 
             
         elif flag == "CHATS":
             self.parent.chats = json.loads(msg_content)
-            print("Parent chats:",  self.parent.chats)
             self.parent.hs.draw_gui()
 
         elif flag == "CHAT":
@@ -233,3 +255,4 @@ class Client:
         for ch in text:
             hash = ( hash*281  ^ ord(ch)*997) & 0xFFFFFFFF
         return str(hash)
+

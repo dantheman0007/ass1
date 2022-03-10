@@ -81,7 +81,6 @@ class Server:
             "server_port": clientAddress[1],
             "online_status": True
         }], "user_id")
-        print(sender + " has logged in.")
         
     def chats(self, sender):
         """
@@ -120,8 +119,6 @@ class Server:
                 break
 
         if canCreate == True:
-            print("chat created")
-            print(receivers)
             self.database.get_or_create_chat(receivers)
             final_dict = {"error": ''}
             err_str = json.dumps(final_dict)
@@ -171,7 +168,6 @@ class Server:
             sender: student ID of the user requestng to send message 
             message_content: all the data in the message of the datagram in JSON format
         """
-        print("sending message")
         message_dict = json.loads(message_content)
 
         msg = message_dict["message"]
@@ -190,7 +186,6 @@ class Server:
             "user_id": sender,
             "online_status": False
         }], "user_id")
-        print(sender+ " has gone offline")
 
         header = "`".join(["QUIT",sender])
         body = dict()
@@ -210,7 +205,6 @@ class Server:
         message_dict = json.loads(message_content)
         chat_id=message_dict["chat_id"]
         users= chat_id.split("-")
-        print(f"users {users}")
         online = False
     
         for user in users:
@@ -259,7 +253,7 @@ class Server:
 
                 if (error):
                     header = "`".join(["ACK",sender])
-                    final_dict = {"message": "the message sent was wrong"}
+                    final_dict = {"message": f"ERROR. Message received: stresstest. Server hash: {server_hash}"}
                     err_str = json.dumps(final_dict)
                     response = "`".join([header,err_str])
                     self.serverSocket.sendto(response.encode('utf-8'),clientAddress)
