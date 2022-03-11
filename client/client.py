@@ -75,7 +75,8 @@ class Client:
             message: outgoing message to server -> client_ip
             chat_id: unique ID associated with a chat
         """
-        request = self.create_request("SEND", message = message, chat_id = chat_id)
+        checked_message= message.replace("`","'")
+        request = self.create_request("SEND", message=checked_message, chat_id = chat_id)
 
         self.client_socket.sendto(request.encode("utf-8"), (self.parent.SERVER_NAME, self.parent.SERVER_PORT))
         self.waiting_for_ack= True
@@ -85,7 +86,7 @@ class Client:
             # wait for server to return an ACK
 
         if not(self.ack):
-            self.send_message(message, chat_id)
+            self.send_message(checked_message, chat_id)
             # if server returns NACK, resend message
 
         # server received correct message
