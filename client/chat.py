@@ -132,7 +132,7 @@ class ChatScreen:
             ("muted", justify_right))
 
         self.message_box.insert("end", 
-            message_dict["content"]+"\n\n", (justify_right, "regular_text",))
+            message_dict["content"]+"\n", (justify_right, "regular_text",))
 
         if self.parent.user_id == message_dict["from_id"]:
             if (self.online): # if the receiver is online, print 2 ticks
@@ -141,6 +141,7 @@ class ChatScreen:
             else: # if the receiver is offline, print 1 tick
                 self.message_box.insert("end",u'\u2713'+"\n\n",(justify_right,"regular_text"))
         
+        self.message_box.insert("end", "\n", (justify_right, "regular_text",))
         self.message_box.see("end")
     
 
